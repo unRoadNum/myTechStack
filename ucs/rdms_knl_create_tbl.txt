@@ -1,0 +1,28 @@
+# rdms_knl_create_tbl()
+
+# 入参分析
+***
+1. STRING szTblName;
+	** typedef char* STRING
+	** 表名字
+2. UINT16 usModule
+3. UINT8 ucTblType
+4. UINT32 ulCapacity
+5. UINT16 usFileNum
+
+# 从统一内存表管理中申请表空间
+***
+1. 首先通过遍历全局变量g_pstDbTblRT[ulLoop].acTblName来检查是否已经存在该表
+	** 全局变量g_ulTBLNum记录当前内存表数量
+2. 检查usFileNum的值是否等于在createTbl之前就新建字段api：rdms_knl_add_field()中
+的修改的全局变量g_pstTblField->usFileNum; 
+以下是rdms_knl_add_field()中已改变的全局变量:
+	** g_pstTblField->usFileNum: 当前加入的字段的数目
+	** g_pstTblField->astField[256]: 
+		> usFieldOffset(字段偏移量)
+		> usFieldLen (字段长度)
+3. 初始化当前内存表
+	> voss_mem_memset((VOID*)(&g_pstDbTblRT[g_ulTBLNum]), 0, sizeof(RDMS_KNL_TABLE_T));
+	//将各字段copy到g_pstDbTblRT全局变量
+	> voss_mem_memcpy(g_pstDbTblRT[g_ulTBLNum].pstField, g_pstTblField->astField, usFileNum*sizeof(RDMS_KNL_TABLE_T));
+	> 省略

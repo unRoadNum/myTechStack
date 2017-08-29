@@ -1,0 +1,36 @@
+# rdms_knl_get_rec_by_idx();
+
+# 入参分析
+***
+UINT8  *pucRec;
+DBHANDLE  hIdx;
+UINT8 	*pucIdxKey;
+
+# 调用链
+***
+rdms_knl_get_rec_by_idx(); //入参：1. 取回的记录要存放的地址
++ 								   2. 索引表句柄
+|								   3. 索引关键字
+|
+|
++ -- ① hTbl = g_pstDbIdxRT[Handle(hIdx)].hTbl;
++ -- ② rdms_knl_locate_record(); //入参：1. 索引表句柄  2. 索引关键字
+		+
+		|
+		+ - rdms_knl_fetch_index();
+			+
+			|
+			+ - 顺序索引： 利用二分查找，找到待查记录的在原内存表的序号
+			+ - hash1/hash2/hash3: rdms_knl_generate_hash_index(); //入参： 1. 索引表句柄  2. 索引关键字
+				+ ** hash1: 单字段hash索引
+				| ** hash2：双字段hash索引
+				| ** hash3: 三字段hash索引
+				|
+				+ - hash1: rdms_knl_get_value(); //入参：索引字段在原表中的地址
+				|		   ** 得到(UINT32)索引关键字的值，记为ulIndex
+				+ - hash2: 两次调用rdms_knl_get_value(); //入参为做索引的两个字段地址
+						   ** 得到pstIDX->ulY_Max*第一个索引值  + 第二个索引值，记为记为ulIndex
+				+ - hash3: 三次调用rdms_knl_get_value(); //入参为做索引的三个字段地址
+						   ** 得到pstIDX->ulY_Max*pstIDX->ulZ_Max*第一个索引值 + pstIDX->ulZ_Max*第二个索引值 + 第三个索引值，记为ulIndex
+				+ - return: ulIndex = ulIndex%索引因子;
++ -- ③ rdms_knl_get_record(); 

@@ -1,0 +1,116 @@
+# voss_vos_sched()
+
+# 调用栈
+***
+clone();
++
+|
++ - start_thread();
+	+
+	|
+	+ - voss_vk_sched();
+		 +
+		 |
+		 + - voss_vos_msg_q_receive();
+			   +
+			   |
+			   + - voss_vos_sem_p();
+			   + - sem_wait();
+
+# 调用链
+***
+voss_vk_sched(); //入参是ulSchedDesc
++
+|
++ - ① tSchedId = g_astCpssVKSchedDescTbl[ulSchedDesc].tSchedId;
++ - ②
+	while(1)
+	{
+		lByteRecv = voss_vos_msg_q_receive(tSchedId->ulMsgQDesc,(INT8*)(&ptHdr), VK_VCHED_DEF_MAX_MSG_LEN, WAIT_FOREVER); //获取消息队列中的消息
+		if(lByteRecv == MSG_ERROR)
+			continue;
+		while(1)
+		{
+			if(ptHdr == NULL)
+				break;
+			ptNext = ptHdr->ptNext;
+			ptHdr->ptNext = NULL;
+			voss_ipc_msg_receive(ptHdr);
+			ptHdr = ptNext;
+		}
+		while(tSchedId->lReadyNum > 0 || tSchedId->lMailNum > 0)
+		{
+			while(tSchedId->lMailNum > 0)   //调度线程上的消息队列处理
+			{
+				tSchedId->ulProcDescCurr = VOSS_VK_PD_INVALID;
+				tSchedId->pIpcMsgCurr = NULL;
+				ptNode = (VOSS_VK_IPC_MSG_NODE_T*)voss_util_q_fifo_get(&tSchedId->mailBox);
+				if(ptNode == NULL)
+				{
+					tSchedId->lMailNum = 0;
+					break;
+				}
+				tSchedId->lMailNum = tSchedId->lMailNum - 1;
+				ptHdr = (IPC_MSG_HDR_T*)IPC_MSG_NODE_TO_HDR(ptNode);
+				tSchedId->pIpcMsgCurr = (void*)ptHdr;
+				ptData = (VOSS_COM_MSG_HEAD_T*)IPC_MSG_HDR_TO_DATA(ptHdr);
+				ulProcDesc = ptData->stDstProc.ulPd;
+				
+				usGuid = (UINT16)((ulProcDesc >> 16)&0x0000ffff);
+				
+				usInst = (UINT16)(ulProcDesc & 0x0000ffff)
+				
+				ulIndex = g_astCpssVKProcClassTbl[usGuid].ulBegin + usInst;
+				
+				tProcId = g_astCpssVKProcClassTbl[ulIndex].tProcId;
+				
+				tSchedId->ulProcDescCurr = tProcId->ulHash;
+				
+				voss_vk_sched_proc_run(tProcId, ptHdr);
+				
+				voss_ipc_msg_free(*ptHdr);
+				
+				tProcId->pIpcMsgCurr = NULL;
+				
+				tSchedId->ulProcDescCurr = VOSS_VK_PD_INVALID;
+				
+				g_astCpssVkSchedStatTbl[ulSchedDesc].ulCallNum = g_astCpssVkSchedStatTbl[ulSchedDesc].ulCallNum + 1;
+			}
+			
+			tSchedId->ulProcDescCurr = VOSS_VK_PD_INVALID;
+			
+			tSchedId->pIpcMsgCurr = NULL;
+			
+			tProcId = (VK_PROC_ID)voss_util_q_fifo_get(&tSchedId->qReady);
+			
+			tSchedId->lReadyNum --;
+			
+			tSchedId->ulProcDescCurr = tProcId->ulHash;
+
+			g_astCpssVkSchedStatTbl[ulSchedDesc].lQReadyNum --;
+			
+			while(tProcId->lMailNum > 0)  //纤程上的消息队列处理
+			{
+				ptNode = (VOSS_VK_IPC_MSG_NODE_T*)voss_util_q_fifo_get(&tProcId->mailBox)
+				... //类似调度线程队列上的消息处理
+				voss_vk_sched_proc_run(tProcId, ptHdr);
+				voss_ipc_msg_free(*ptHdr);
+				...
+			}
+			
+			if(tProcId->lMailNum == 0)  //如果该纤程的消息队列为空，说明上面已经处理完了
+			{
+				voss_util_q_fifo_put(& tSchedId->qPend, & tProcId->node, UTIL_Q_FIFO_KEY_TAIL); //将该纤程挂在pend队列
+			}
+			else
+			{
+				voss_util_q_fifo_put(& tSchedId->qReady, & tProc->node, UTIL_Q_FIFO_KEY_TAIL); 将该纤程挂载ready队列
+			}
+		}
+	}
+
+
+
+
+
+# 

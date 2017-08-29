@@ -1,0 +1,37 @@
+# 内存表分析
+
+# 调用链
+***
+rdms_init();
++
+|
++ - rmds_knl_sys_init(); //系统初始化的时候 分配好内存  为从bdf中读表，做准备
+	** 将分配好的内存记录在g_pstTblField、g_ulTblNum等全局变量中
+		> g_ulTblNum标记当前表的数量
+		> g_pstTblField在初始化每一个表的的时候，暂存表字段定义
+		> g_pstDbTblRT记录每个表的定义，这是内存表的数组
+		> g_ulIDXNum 记录表中所有索引的总数
+	** 因为ucs_main是一个同一个进程多个线程，线程纤程共享内存，所以标记内存的全局变量共享
+
+usp_usr_init();
++
+|
++ - css_rdms_u_tbl_init();  //用户侧初始化的时候，初始化每个bdf表对应的内存表
+	+
+	|
+	+ - 各个读表函数，例如rdms_cscf_config_asservice_create();
+		+
+		|
+		+ - ① rdms_knl_init_field_buff();	//memset(g_pstTblField, 0, sizeof(g_pstTblField));
+		+ - ② rdms_knl_add_field();	//初始化表的字段定义, 输入szFieldName等
+				** strcpy(g_pstTblField->astField[usNum].acFieldName, 0, szFieldName);
+		+ - ③ rdms_knl_create_tbl(); //返回表句柄
+				** 创建bdf表的定义（包括②定义的字段定义）
+				** rdms_knl_init_field_buff();
+				** 内存表对放入多少个记录有严格限制（通过入参来限制用户数据ulCapacity）
+				** return RDMS_KNL_OT_TABLE | g_ulTBLNum;
+					> #define RDMS_KNL_OT_TABLE ((DBHANDLE)0x10000)
+					> #define UINT32 DBHANDLE
+		+ - ④ rdms_knl_create_index(); //入参：③步骤产生的表句柄hTbl
+				** pstTBL = &g_pstDbTblRT(Handle(hTbl));
+					> #define Handle(A)  ((A)&(0x0ffff))

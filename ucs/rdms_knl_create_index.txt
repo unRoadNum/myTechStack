@@ -1,0 +1,17 @@
+# 内存索引表
+
+# rdms_knl_create_index() 
+	** 创建索引表
+	
+# 整体思想
+***
+1. 申请预先分配好的内存索引表
+2. 根据用来建立索引的表字段(函数输入用来建立索引的字段)查找。
+	** 查出该字段属于原表中的字段位置（就是具体的第几个），在索引内存表中记录该字段在原表中的位置。
+3. 在索引对应的内存表中记录 该内存表
+	** 实际就是关联原表和内存表
+4. 记录了该索引表的索引因子:
+	** pstIDX->ulX_Max	pstIDX->ulY_Max	pstIDX->ulZ_Max
+	** hash1: 索引因子 pstIDX->ulX_Max
+	   hash2: 索引因子 pstIDX->ulX_Max*pstIDX->ulY_Max
+	   hash3: 索引因子 pstIDX->ulX_Max*pstIDX->ulY_Max*pstIDX->ulZ_Max;

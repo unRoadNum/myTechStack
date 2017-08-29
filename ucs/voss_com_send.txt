@@ -1,0 +1,90 @@
+# 消息队列机制分析
+
+# 调用链
+***
+voss_com_send(); //入参：消息目的地址，消息ID（预定义好的), 消息体，消息体长度
++ /* 虽然入参是消息体指针，但消息有可能是放在栈上的
+|  * 所以在消息里面会分配堆内存给消息体，让它挂在消息队列上
+| */
+|
+|
++ ① 根据入参填写消息结构体VOSS_COM_MSG_HEAD_T，源地址根据voss_vk_pd_self_get()获取
++ ② voss_com_send_extend();  //入参是VOSS_COM_MSG_HEAD_T结构
+		+
+		|
+		+ ① 进程内通信：
+			** voss_com_packet_setup_local(); //输入结构是VOSS_COM_MSG_HEAD_T
+			** voss_com_ipc_msg_send();
+				+
+				|
+				+ voss_ipc_msg_send(); //入参是local宏，和消息体
+						+ ** 根据调度线程配置表中，调度线程对应的消息队列的索引
+						| 在消息队列表中找到该消息属于的消息队列，插入该消息队列
+						| 本质上消息队列表中的每一个数组元素对应一个消息队列
+						|
+						+ - voss_vk_sched_send(); <-- g_astCpssVkProcClassTbl[usGuid].ulSchedDesc, 消息内容等等
+							 +
+							 |
+							 + - ① tSchedId = g_astCpssVkSchedDescTbl[ulSchedDesc].tSchedId;
+							 + - ② 如果是本调度模块内部消息：
+									> if(voss_vk_sched_desc_self() == ulSchedDesc)
+										{
+											pstNode = (VOSS_VK_IPC_MSG_NODE_T*)IPC_MSG_HDR_TO_NODE(puf);
+											voss_util_q_fifo_put(&tSchedId->mailBox, &pstNode->node, UTIL_Q_FIFO_KEY_TAIL); //插入消息队尾
+											tSchedId->lMailNum = tSchedId->lMailNum + 1;
+										}
+							 + - ③ 如果不是本调度模块内部消息
+									> voss_vos_msg_q_send(); //入参是&tSchedId->ulMsgQDesc, pcBuf(消息内容)，ulNBytes(消息字节长度)等
+										+ //ulMsgQDesc = tSchedId->ulMsgQDesc；
+										|
+										+ - tMsgQId = g_astCpssVosMsgQDescTbl[ulMsgQDesc].msgQId;
+										+ - voss_vos_sem_p(tMsgQId->ulSemDescSend, lTimeout);
+										+ - voss_vos_sem_p(tMsgQId->ulSemDescAccess, WAIT_FOREVER);
+										+ - pstNode = voss_util_q_fifo_get(&tMsgQId->qFree);
+										+ - pstNode->lMsgLen = 输入消息体长度;
+										+ - voss_mem_memcpy((void*)VOS_MSG_NODE_DATA(pstNode), (void*)pcBuf, ulNBytes);
+										+ - 消息队列插入:
+											> 如果消息优先级是紧急:
+												voss_util_q_fifo_put(&tMsgQId->qMsg, &pstNode->node, UTIL_Q_FIFO_KEY_HEAD); //插入表头
+											> 如果是一般：
+												voss_util_q_fifo_put(&tMsgQId->qMsg, &pstNode->node, UTIL_Q_FIFO_KEY_TAIL); //插入表尾
+										+ - voss_vos_sem_v(tMsgQId->ulSemDescSend);
+										+ - voss_vos_sem_v(tMsgQId->ulSemDescAccess);											
+		+ ② 进程外
+			** voss_com_tcp_send();
+				+
+				|
+				+ - voss_com_send_forward();
+					+
+					|
+					+ - ① 如果是本模块内部消息：
+						>if(voss_com_is_local_address())
+							voss_com_ipc_msg_send();
+					+ - ② 后略
+
+
+
+
+# 主要结构定义
+***
+1.   typedef struct tagVOSS_COM_PID
+	{
+		VOSS_COM_LOGIC_ADDR_T	stLogicAddr;
+		
+		UINT32 ulAddrFlag;
+		UINT32 ulPid;
+	}VOSS_COM_PID_T;
+
+2. typedef struct tagVOSS_COM_MSG_HEAD
+	{
+		VOSS_COM_PID_T		stDstProc;
+		VOSS_COM_PID_T		stSrcProc;
+		UINT32				ulMsgId;
+		UINT8				ucPriFlag;
+		UINT8				ucAckFlag;
+		UINT8				ucShareFlag;
+		UINT8				usReserved;
+		UINT8				*pucBuf;
+		UINT32				ulLen;	
+	}VOSS_COM_MSG_HEAD_T;
+	

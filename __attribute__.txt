@@ -1,0 +1,9 @@
+# __attribute__
+
+//gcc编译器约定
+
+# __attribute__((packed))
+***
+1. __attribute___是gcc的约定, 用来设置函数属性，变量属性和类型属性
+2. packed是类型属性
+3. __attribute__((packed))约定编译器不做字节对齐的优化

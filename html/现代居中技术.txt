@@ -1,0 +1,13 @@
+<html>
+	<head>
+		<style>
+			<--!display:block现代居中技术-->
+			<--!border-radius圆角-->
+			canvas{background:;display:block;border-radius:4px;box-shadow:0px 0px 10px #000;}
+		</style>
+	</head>
+	<body>
+		<canvas>
+		</canvas>
+	</body>
+</html>

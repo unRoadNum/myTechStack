@@ -1,0 +1,33 @@
+# 增量文件
+
+# 调用链
+***
+
+# 内存表和增量文件的关系
+***
+
+
+# 关键变量
+***
+1. STRING g_szDcmIncFileName = "H:\\rdms\\omc\\incrdata.dat";
+	** typedef char *STRING
+2. OAMS_ADAPT_INC_FILE_HANDLE_T g_astIncFileCtrl[];
+
+# 属性定义
+***
+typedef struct
+{
+	UINT8	aucTblName[32];
+	UINT16	usRecLen;
+	UINT8	ucOprMode;
+}OAMS_ADAPT_DCM_INCFROMOMC_HEADER_T;
+
+
+typdef struct
+{
+	UINT32	ulOpCode;
+	UINT16  usActionId;
+	UINT8	aucTblName[32];
+	UINT8	ucOprMode;
+	OAMS_ADAPT_CREATE_INC_FILE_FUN	handle_fun;
+}OAMS_ADAPT_INC_FILE_HANDLE_T;

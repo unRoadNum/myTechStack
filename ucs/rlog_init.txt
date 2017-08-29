@@ -1,0 +1,78 @@
+# rlog_init()
+
+# 基本思想
+***
+多线程通过共享内存的方式，将内容写入rlogBuff，
+rlog守护进程定期将rlogBuff内容写入xrlog.log文件。
+
+g_pCurrBuf:  保存当前相对于MEM_LEN的偏移地址
+g_logBuf
+g_VossRLogWritePeriod: 
+	** 默认计数值是10，可以提供设置
+	** rlog_init的时候启动守护进程child_proc，进行计数
+
+# 调用链
+***
+RLOG(...)
++
+|
++ - WriteToLog(__FILE__, __LINE__, _VA_ARGS__); 
+	+ //_VA_ARGS__表示变参， C99标准，gcc支持
+	|
+	+ - _RLOG(char *szFormats, ...);
+		+
+		|
+		+ - ① length = vsnprint(g_pCurrBuf, TAIL_LEN, szFormats, args);  
+				** va_list args;
+				** va_start(args, szFormats);
+			---- sem_p(semid); --------------------------- //控制互斥访问
+		+ - ② left = MEM_LEN - (g_pCurrBuf - g_logBuf); //MEM_LEN中剩余空间
+		+ - ③ g_pCurrBuf += length;
+		+ - ④ if(length >= left)  //剩余空间存不下的时候，覆盖开始写入的字符串，即g_logBuf指向的字符串
+				> g_pCurrBuf = g_logBuf;
+				> g_logBuf[0] = 0;
+			----- sem_v(semid); ---------------------------
+		+ - ⑤ va_end(args);
+		
+rlog_init();
++
+|
++ - ① SHMEM(MEM_LEN+TAIL_LEN, g_logBuf);	// #define MEM_LEN (1024*1024*50)	#define TAIL_LEN (1024*4)
+		+ ** memset(g_logBuf, 0, MEM_LEN+TAIL_LEN);
+		|
+		+ - #define SHMEM(size, p)\
+			do{p = (char*)mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);}while(0);
+			** mmap的第一个参数是NULL代表由系统分配内存
+			** MAP_SHARED|MAP_ANONYMOUS  共享内存|匿名映射（表示内存不跟任何文件关联）
++ - ② fork() == 0 (子进程)
+		> for(i=0; i<1024; i++) close(i); 	//关闭系统默认的所有的文件描述符(即1024个)
+		> child_proc();
+		   +
+		   |
+		   + - ① pCurr = g_logBuf; //once time
+					** 第一次初始化，后续保留写入文件的指针，保证下次不写入重复内容
+		   + - ② 判断日志开关, 定义count;
+		   + - ③ prctl(); 给进程起名字ucs_rlog
+		   + - ④ while() //守护进程，定时存日志
+				> {
+					if(0 == (++count)%g_VossRLogWritePeriod)
+						rlog_save();
+				}		+
+						|
+						+ - ① flen = ftell(f); //获取文件末尾指针
+						+ - ② if(flen > LOGFILE_MAX_SIZE)  //LOGFILE_MAX_SIZE 1024*1024*5
+								> 修改原来的默认rlog文件名rlog.log
+								> 新建rlog.rlog
+						-------------sem_p(semid); -------------------------控制互斥访问-------------------
+						+ - ③ 将内存pCurr中的内容写入文件
+								** 注意如果到缓冲区的尾的时候，返回头，继续写入文件
+						-------------sem_v(semid);---------------------------------------------------------
+						
+						
+FAQ
+***
+fork以后地址空间:
+	** 虽然fork的子进程和父进程使用不同的地址空间，子进程创建以后，父进程的全局变量、
+静态变量和fork以前的局部变量都会复制到的子进程的地址空间。自此以后，二者互不干扰，各行其是。
+	** 但是，对于从父进程赋值来的指针，只是简单的赋值了指针，在子进程中通过指针操作的
+地址空间和父进程中还是一样的。

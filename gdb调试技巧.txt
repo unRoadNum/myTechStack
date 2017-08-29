@@ -1,0 +1,14 @@
+# gdb调试技巧
+
+对已经运行的进程调试的手段
+***
+1. gdb attach 进程号
+2. stop
+3. set print pretty on
+4. b imp_as_oam.c:6093
+5. n
+6. c（运行到下一个节点）
+7. detach
+8. clear(删除某一行节点)
+9. delete（可以选择删除所有节点）
+

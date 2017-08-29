@@ -1,0 +1,86 @@
+# 调度进程 voss_vk_sched()
+
+# 调用链
+***
+voss_sch_task_create();
+	+	** 根据gatVKSchedConfig，即调度任务表调用voss_vk_sched_spawn();
+	|
+	+ - - voss_vk_sched_spawn(); //入参就是调度任务表的配置项
+			+
+			|
+			+ - - ① voss_vk_sched_desc_alloc(); 
+			|		** 获取g_astCpssVKSchedDescTbl中bInUse是false的
+			|		** 将bInUse的状态置为true，并返回该未引用的表索引值，即数组索引, ulSchedDesc
+			+ - - ② 分配VOSS_SCHED_ID结构空间，即tSchedId
+			|
+			+ - - ③ voss_vk_sched_init(); //入参是调度任务表的配置项  以及 tSchedId, ulSchedDesc
+					   +
+					   |
+					   + - - ① voss_vk_sched_lib_init();
+					   |
+					   + - - ② voss_vos_msg_q_create(); 
+								** 根据单个消息长度，消息大小，类型初始化消息表的某一列
+								** 将g_astCpssVosMsgQDescTbl表中的未引用一列索引返回，即ulMsgQDesc
+					   + - — ③ 将步骤2的消息索引信息赋值， 即tSchedId->ulMsgQDesc = ulMsgQDesc;
+					   + - - ④ voss_vos_task_spawn(); //返回ulTaskDesc
+								+
+								|
+								+ - - ① voss_vos_task_desc_alloc(); //获取g_astCpssVosTaskDescTbl表没有使用的索引，即ulTaskDesc
+								+ - - ② malloc了VOSS_VOS_TASK_TCB_T结构，即tTaskId
+								+ - - ③ voss_vos_task_init(); //给步骤②tTaskId初始化
+										+
+										|
+										+ - - pthread_create();
+								+ - - ④ g_astCpssVosTaskDescTbl[ulTaskDesc].tTaskId = tTaskId;
+					   + - - ⑤ g_astCpssVosTaskDescTbl[ulTaskDesc].ulSchedDesc = ulSchedDesc;
+					   + - - ⑥ 初始化tSchedId中其他结构，比如QReady、QPend
+
+
+# 结构变量分析
+voss_vk_sched_lib_init(void)
+***
+初始化g_astCpssVkSchedDescTbl全局变量
+	** 该表的定义如下：
+		typedef struct
+		{
+			UINT32		ulMsgQDesc;
+			UINT32		ulTaskDesc;
+			VOSS_UTIL_Q_FIFO_HEAD_T		qReady;
+			VOSS_UTIL_Q_FIFO_HEAD_T		qPend;
+			UINT32		ulQReadyNum;
+			UINT32		ulQPendNum;
+			...
+		}VOSS_VK_SCHED_SCB_T;
+		typedef VOSS_VK_SCHED_SCB_T*  VOSS_SCHED_ID;
+		typedef struct 
+		{
+			VOSS_SCHED_ID	tSchedId;
+			BOOL			bInUse;
+		}VOSS_VK_SCHED_DESC_T;
+
+		
+voss_vos_task_init(void)
+***
+初始化g_astCpssVosTaskDescTbl[64]
+	** 结构定义
+		typedef struct
+		{
+			INT8 	acName[32];
+			INT32	lOptions;
+			INT32	lPriority;
+			VOSS_FUN_PTR	pfEntry;
+			INT32	lStackSize;
+			ULONG	ulThreadId;
+		}VOSS_VOS_TASK_TCB_T;
+		typedef VOSS_VOS_TASK_TCB_T* VOSS_TASK_ID;
+		typedef struct
+		{
+			VOSS_TASK_ID	tTaskId;
+			BOOL			bInUse;
+			INT8			acName[32];
+			...
+			UINT32			ulRunTicks;
+			UINT32			ulSchedDesc;
+		}VOSS_VOS_TASK_DESC_T;
+
+ 
