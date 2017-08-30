@@ -1,0 +1,11 @@
+# ReentrantLock
+
+***
+java SE 5.0之前是通过synchronized关键字来实现锁功能的。
+java SE 5.0之后在并发包新增了Lock接口来实现锁的功能。
+
+***
+更加灵活，但是需要显式的申请和释放。
+
+
+
