@@ -1,0 +1,70 @@
+# 同步块 
+
+***
+这样也是同步的，线程获取的是同步块synchronized (this)括号（）里面的对象实例的对象锁，
+这里就是ObjectService实例对象的对象锁了。
+需要注意的是synchronized (){}的{}前后的代码依旧是异步的
+
+***
+public class Run {
+ 
+    public static void main(String[] args) {
+        ObjectService service = new ObjectService();
+ 
+        ThreadA a = new ThreadA(service);
+        a.setName("a");
+        a.start();
+ 
+        ThreadB b = new ThreadB(service);
+        b.setName("b");
+        b.start();
+    }
+ 
+}
+ 
+class ObjectService {
+ 
+    public void serviceMethod() {
+        try {
+            synchronized (this) { //同步块
+                System.out.println("begin time=" + System.currentTimeMillis());
+                Thread.sleep(2000);
+                System.out.println("end    end=" + System.currentTimeMillis());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+ 
+class ThreadA extends Thread {
+ 
+    private ObjectService service;
+ 
+    public ThreadA(ObjectService service) {
+        super();
+        this.service = service;
+    }
+ 
+    @Override
+    public void run() {
+        super.run();
+        service.serviceMethod();
+    }
+ 
+}
+ 
+class ThreadB extends Thread {
+    private ObjectService service;
+ 
+    public ThreadB(ObjectService service) {
+        super();
+        this.service = service;
+    }
+ 
+    @Override
+    public void run() {
+        super.run();
+        service.serviceMethod();
+    }
+}
