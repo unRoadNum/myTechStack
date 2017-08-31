@@ -1,0 +1,11 @@
+# POSIX timer
+
+***
+timer_create();
+timer_delete();
+timer_gettime();
+timer_settime();
+timer_getoverrun(); 
+
+***
+POSIX Timer对setitimer进行了增强，克服了setitimer的诸多问题。
