@@ -1,0 +1,10 @@
+# 转换成跟date命令相同的格式
+
+***
+不用转换成struct tm格式
+
+***
+char *ctime(const time_t *clock);
+
+***
+Wed Dec 7 20:45:43 PST 2011
