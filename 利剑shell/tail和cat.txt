@@ -1,0 +1,19 @@
+# tail 和 cat
+
+区别和联系
+***
+都是将文本打印到标准输出上，但tail可以查看动态改变的日志文件，持续刷新
+但cat主要是显示文本，具体cat的功能详见下述
+
+cat主要用法
+***
+1. 一次显示整个文件
+	* cat filename
+2. 从标准输入(键盘)中创建一个新文件
+	* cat > filename
+3. 合并一个文件
+	* cat file1 file2 > file
+
+tail主要用法
+***
+tail -f runlog.log
