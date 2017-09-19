@@ -1,0 +1,36 @@
+## 继承自java.util.Collection
+
+## 三种主要用法
+ArrayList/Vector/LinkedList
+
+## 不同点
+1. ArrayList/Vector内部都是用数组来实现的
+	* ArrayList没有对任何一个方法做线程同步
+	* Vector对它的绝大部分方法做了线程同步
+2. LinkedList内部使用循环双向链表实现
+	* 无论LinkedList是否为空，链表内都有一个header表项
+
+## 性能分析
+1. 增加元素到列表尾部
+	* 只有当ArrayList对容量的需求超过当前数组的大小时，才扩容; 
+	扩容过程中，会进行大量的数组复制操作，即System.arraycopy
+	* LinkedList虽然使用了链表的结构，不需要维护容量的大小；但是
+	每次的元素增加都需要新建一个Entry对象，反倒是性能不如ArrayList
+2. 增加元素到列表任意一个位置
+	* ArrayList每次操作都会引起大量的数组复制
+	* LinkedList性能上有优势
+3. 删除任意元素位置
+	* ArrayList删除每一个元素都会引起大量的数组复制
+	* LinkedList首先要通过循环找到要删除的元素
+		- 如果要删除的元素位于List的前半段，则从前往后找
+		- 如果位置处于后半段，则从后往前找
+	所以ListedList要删除的元素在中间就会性能比较低
+4. 容量参数
+	* 默认情况下，ArrayList数组的初始值大小是10，每次扩容将新的数组大小
+	设置为原大小的1.5倍
+5. 遍历列表: 通过三种方式foreach、迭代器和for循环对比， foreach反编译以后比迭代器多一个赋值语句，
+性能上对ArrayList来说for循环性能比较高，LinkedList迭代器性能最高。
+
+
+	
+	
