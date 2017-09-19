@@ -1,8 +1,8 @@
-# sed命令
+## sed命令
 
 用途
 ***
-stream editor流编辑器的文本替换操作
+stream editor流编辑器的文本替换操作，一般用作逐行替换
 
 基本操作
 ***
