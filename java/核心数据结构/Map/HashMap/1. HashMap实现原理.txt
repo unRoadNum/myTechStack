@@ -1,0 +1,23 @@
+## 实现原理
+
+简单的说就是将key值做hash算法，然后将hash值映射到内存地址，直接取得key对应的数据。
+	* 在HashMap中，底层数据结构时数组，所谓的内存地址即数组下标的索引
+
+1. key值的hash算法
+```
+① int hash = hash(key.hashCode());
+② public native int hashCode();
+③ static int hash(int n){
+	h ^= (h >>> 20) ^ (h >>> 12)
+	return h ^ (h >>> 7) ^ (h >>> 4);
+}
+```
+标号①的就是key值的hash算法，可以看见它分别调用Object类的hashCode()方法和HashMap()内部函数hash()
+
+2. hash值映射到内存地址
+```
+int i = indexFor(hash, table.length);
+static int indexFor(int h, int length){
+	return h & (length - 1)
+}
+```

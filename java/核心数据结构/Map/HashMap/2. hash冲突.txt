@@ -1,0 +1,11 @@
+## Hash冲突
+
+***
+1. HashMap的底层数组类型是Entry对象数组，即Entry[MAXSIZE]。
+	* Entry对象有4个成员： key value next hash
+2. 当HashMap做put操作时有冲突时，新的Entry值依然会被安放在对应的索引下标内，
+并替换原有的值。同时，为了保证旧值不丢失，会将新的Entry->next=旧值。这样，便
+实现了在一个索引空间内存放多个值项。
+
+
+

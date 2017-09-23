@@ -1,0 +1,9 @@
+## HashMap和Hashtable异同点
+同：
+	虽然HashMap和Hashtable是两套不同的实现，两者都实现了Map接口。
+异：
+	1. Hashtable的大部分方法做了同步，而HashMap没有，因此HashMap不是线程安全的
+	2. Hashtable不允许key或者value使用null值，而HashMap可以
+	3. 在内部实现上，key的hash算法和hash值到内存索引的映射算法不同
+但是，两者的性能差不多
+

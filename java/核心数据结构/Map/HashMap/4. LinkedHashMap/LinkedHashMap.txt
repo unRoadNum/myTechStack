@@ -1,0 +1,7 @@
+## 有序的HashMap
+
+***
+LinkedHashMap继承自HashMap， 在遍历HashMap时，其输出是无序的。
+如果希望元素保存输入时的顺序，则需要使用LinkedHashMap替代。
+	* LinkedHashMap在内部增加了一个链表，用以存放元素的顺序。
+

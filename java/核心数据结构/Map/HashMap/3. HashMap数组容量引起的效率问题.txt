@@ -1,0 +1,18 @@
+## 数组容量引起的效率问题
+
+***
+底层是数组实现的，都不可避免的会有容量不足，需要扩展的问题。
+而数组的重组相对而言较为耗时，会影响HashMap的性能。
+
+***
+HashMap提供了两个可以指定初始化大小的构造函数
+```
+public HashMap(int initialCapacity);
+public HashMap(int initialCapacity, float loadFactor); //LoadFactor是填充因子
+```
+在HashMap内部，维护了一个threshold变量，它始终被定义为当前数组总容量和填充因子的乘积，
+它表示HashMap的阈值。当HashMap的实际容量超过阈值时，HashMap便会扩容。
+
+***
+HashMap扩容操作会遍历整个HashMap，应该尽量避免该操作发生，设置合理的初始大小和填充
+因子，可以有效减少HashMap的扩容次数。
