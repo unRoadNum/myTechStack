@@ -5,3 +5,23 @@ LinkedHashMap继承自HashMap， 在遍历HashMap时，其输出是无序的。
 如果希望元素保存输入时的顺序，则需要使用LinkedHashMap替代。
 	* LinkedHashMap在内部增加了一个链表，用以存放元素的顺序。
 
+***
+LinkedHashMap提供两种类型的数据:
+	1. 元素插入时的顺序
+	2. 最近访问的顺序
+```
+//accessOrder为true时，按照元素最后访问顺序; false为元素插入时的顺序
+public LinkedHashMap(int initialCapacity, float loadFactor, boolean accessOrder);
+```
+
+***
+在内部实现中，LinkedHashMap通过继承HashMap.Entry类，实现了LinkedHashMap.Entry。
+	* 为HashMap.Entry增加了before和after属性记录某一表项的前驱和后继，构成
+循环链表。
+
+## FAQ
+不要在迭代器中，修改集合的结构。比如HashMap、ArrayList和Vector。
+	** put和remove方法会修改集合的结构
+	** get方法会修改LinkedHashMap的访问顺序，也间接会修改集合的结构
+
+
