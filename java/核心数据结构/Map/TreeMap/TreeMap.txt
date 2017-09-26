@@ -1,0 +1,13 @@
+## 与HashMap性能比较
+TreeMap比HashMap拥有更强大的功能，它实现了SortedMap接口，可以对元素进行排序。
+但是性能上比HashMap低。
+
+## 与LinkedHashMap排序比较
+LinkedHashMap是基于元素进入集合的顺序或者被访问的先后顺序进行排序;
+TreeMap是基于元素的固有顺序（由Comparator或者Comparable确定）;
+	* TreeMap的构造函数public TreeMap(Comparator<? super K>comparator);
+	* 使用一个实现了Comparable接口的key
+
+## TreeMap内部实现是基于红黑树
+
+## 常用于有排序需求的map中
