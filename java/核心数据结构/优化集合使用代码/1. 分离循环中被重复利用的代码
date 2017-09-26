@@ -1,0 +1,6 @@
+## 优化
+for(int i = 0; i < collection.size(); i++)
+-> 转换
+int colsize = collection.size();
+for(int i= 0; i < colsize; i++)
+

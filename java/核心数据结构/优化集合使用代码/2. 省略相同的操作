@@ -1,0 +1,13 @@
+## 优化
+```
+int count = 0;
+String s = null;
+int colsize = collection.size();
+for(int i = 0; i < colsize; i++){
+	//省略相同的操作
+	if ( ((s = (String)collection.get(i)).indexOf("north") != -1)
+	|| (s.indexOf("west") != -1)	//将collection.get(i)提取出来为s
+	|| (s.indexOf("south") != -1) )
+	count++;
+}
+```
