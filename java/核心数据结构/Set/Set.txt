@@ -1,0 +1,9 @@
+## 特性
+Set集合中的元素是不能重复的。
+
+## 实现
+1. Set接口并没有在Collection接口之上增加额外的操作。
+2. Set都只是对应的Map的一种封装
+	* HashSet是对HashMap封装
+	* LinkedHashSet是对LinkedHashMap封装
+	* TreeSet对应MapSet
