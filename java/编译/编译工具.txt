@@ -1,0 +1,14 @@
+## 相关文件
+1. .java文件： java源文件
+2. .class文件：java源文件编译成的.class文件
+
+## 相关工具
+*** 如果要运行java程序，只需要按照jre就可以了; 如果要写java程序，则需要安装jdk
+1. jre：java运行环境，执行.class文件(包括jvm，java基础类库)
+2. jdk: java开发工具包，是程序员使用java语言编写java程序所需的开发工具包，是提供给程序员使用的。
+	* jdk包含了jre，同时还包含了编译java源码的编译器javac，还包含了很多java程序调试和分析的工具: jconsole等
+
+## jdk技法
+*** 写在前面的话：java编译工具在命令行使用是区分大小写的（参考类名定义）
+1. javac HelloWorld.java（编译成.class文件）
+2. java HelloWorld(java命令不用写.class后缀)
