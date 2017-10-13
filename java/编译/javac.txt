@@ -1,0 +1,19 @@
+## 参数
+-g	生成所有调试信息
+-version	版本信息
+-d <dir>	指定存放生成的类文件的根目录
+-classpath(缩写为cp)	
+	1. 应用场景： 如果当前你要编译的java文件中引用了其他类（比如说继承） 但该引用类的.class文件不在当前目录下
+	2. 使用方法： javac -classpath c:/junit3.8.1/junit.jar xxx.java
+		* 如果在当前目录下，直接javac xxx.java(其实执行的就是javac -classpath %CLASSPATH% xxx.java)
+			** CLASSPATH是javac的环境变量，javac和jvm都是将package名字加到CLASSPATH构造.classpath的路径
+			** 根据-classpath选项找到的编译相关的类路径由三部分构成： classpath/package/xxx.java，因此classpath一定不能含有package路径
+			** 默认情况下，javac和jvm都会查找当前目录
+		* classpath可能包含多个路径; 多路径应该有分隔符分开
+-sourcepath
+	1. 应用场景：
+		编译时会在CLASSPATH中查找是否有已经编译好的xxx.class文件，
+			若有，则看sourcepath中对应的xxx.java修改时间是否早于.class文件
+				若是，则无需编译
+				若否，则重新编译xxx.java文件。
+		当代码量比较大的情况下，这种方法能够有效减少编译的时间，类似于makefile的功能。

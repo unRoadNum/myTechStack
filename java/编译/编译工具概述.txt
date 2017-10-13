@@ -8,7 +8,7 @@
 2. jdk: java开发工具包，是程序员使用java语言编写java程序所需的开发工具包，是提供给程序员使用的。
 	* jdk包含了jre，同时还包含了编译java源码的编译器javac，还包含了很多java程序调试和分析的工具: jconsole等
 
-## jdk技法
+## jdk概要技法
 *** 写在前面的话：java编译工具在命令行使用是区分大小写的（参考类名定义）
 1. javac HelloWorld.java（编译成.class文件）
 2. java HelloWorld(java命令不用写.class后缀)
