@@ -1,0 +1,7 @@
+## javap
+
+## 应用场景
+反汇编器，显示编译类文件中的可访问功能和数据，同时显示字节代码含义
+
+## 使用举例
+javap com.thaIm.HelloWorld，然后就把HelloWorld.class反编译的结果返回给你
