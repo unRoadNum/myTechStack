@@ -1,0 +1,3 @@
+## 参数
+-version -verbose -classpath 都和javac的选项意义一样
+-jar:	运行jar，如java -jar HelloWorld.jar
