@@ -1,0 +1,4 @@
+## 惯用法
+1. 打包:	jar cvf hello.jar com
+2. 更新:	jar uvf hello.jar com
+3. 查看:	jar tf hello.jar

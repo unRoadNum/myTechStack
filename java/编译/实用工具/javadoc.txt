@@ -1,0 +1,32 @@
+## javadoc生成文档用法
+
+## javadoc注释
+1. javadoc要求注释以"/**"开始，以"*/"结束
+2. 注释里面可以包含普通文本、HTML标记和javadoc标记
+3. javadoc只处理源文件中在类/接口定义、方法、域、构造器之前的注释，忽略其他地方注释
+
+## 例子
+/** 
+*Demo--<b>Helloworld</b> 
+*@author thaIm 
+*@version 1.0 2012/01/01 
+*/ 
+public class HelloWorld { 
+	/** 
+	*在main( )方法中使用的显示用字符串 
+	*@see #main(java.lang.String[]) 
+	*/ 
+	static String SDisplay; 
+	/** 
+	*显示HelloWorld 
+	*@param args 从命令行中带入的字符串 
+	*@return 无 
+	*/ 
+	public static void main(String args[]) { 
+		SDisplay = "Hello World " ; 
+		System.out.println( SDisplay ); 
+	} 
+} 
+***
+javadoc -private -d doc -author -version com\thaIm\HelloWorld.java 
+在doc目录下生成HelloWorld类的说明文档，内容包括私有成员在内的所有类和成员、作者信息、版本信息。
