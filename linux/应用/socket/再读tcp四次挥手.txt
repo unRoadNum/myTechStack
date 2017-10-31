@@ -21,6 +21,22 @@ tcp三次握手以后，开始send/recv数据了。
 	* ACK标记置为1，ack字段取z+1
 	* 带上自己的seq=x+1
 	
+tcp的双方A和B在syn seq以后，双方A和B都是会send msg。
+因为为了保持可靠性，send req和send rsp是对应的。
+不管是多个req对应一个rsp，还是一个req对应一个rsp。
+rsp就是ACK。
+
+所以在A和B结束的时候，都必须确认自己不会在send msg，通信叫做全双工。
+这样说了以后，上面的流程就好理解了。
+A发了自己的结束请求以后，B通过send ack告诉A收该请求，并且不会再resv req from A。
+过了一会儿，这个时间是有的
+
+
+
+
+
+
+	
 
 	
 
