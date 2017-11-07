@@ -1,0 +1,35 @@
+前面研究了基本的使用办法，后面就是一些简单技能的补充了。
+
+#Windows下的ssh和ssh server#
+不要以为只有Linux下才能用ssh，Windows下一样有强大的ssh命令行工具和ssh服务器。
+并且对ssh功能支持的都很好。
+那就是伟大的PuTTY！去官方网站下载吧！
+ssh命令行客户端对应的是plink.exe，命令稍微有一点不同（比如指定端口是大写的P），具体看帮助文件稍作修改就好了。
+ssh服务器端是WinSSHD，傻瓜式安装，默认配置支持windows用户认证。
+ 
+#自动连接和防断线脚本#
+如果你想让连接长期保持，可以写个脚本来保证因为网络原因断线的话可以自动重连。
+先说Windows平台，用plink -pw参数可以指定密码，所以只要写个批处理：
+:1
+plink -pw “password” -D 7070 user@serverip
+goto 1
+这样应该就可以解决大多数问题造成的断线。
+Linux平台ssh默认不支持把密码作为参数，不过有sshpass可以搞定
+http://sourceforge.net/projects/sshpass/files/latest/download
+下载，解压，编译，把可执行文件拷贝到合适的目录，执行命令格式如下：
+sshpass -p "password" ssh -D 7070 user@serverip
+貌似ubuntu下可以直接apt-get install sshpass
+然后写脚本autossh.sh，内容如下：
+#!/bin/bash
+while [ '' == '' ]do ssh_d_process_num=`ps aux|grep -E 'ssh \-' |grep -v grep |wc -l` if [ "$ssh_d_process_num" == "0" ]; then  /home/user/sshpass -p "password" ssh -D 7070 user@ServerIP & fi
+ sleep 300done
+执行一下这个脚本就可以了。sleep 300代表300秒查看一次，可以根据需要调整。
+
+#常用参数#
+其实一般来说不是很有必要加特殊的参数，不过以下几个可以根据需要选择
+-q 静默运行，就算出错也啥都不提示
+-f 后台运行
+-C 压缩，带宽很差的时候压缩会快一些，否则会更慢
+-i xxx.file 提供公钥文件直接验证
+-l 指定用户名，其实就是@前面写的那个。
+其他的不太常用，自己查手册吧~
