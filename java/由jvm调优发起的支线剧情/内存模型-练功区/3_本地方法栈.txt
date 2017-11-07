@@ -1,0 +1,9 @@
+#本地方法栈#
+
+本地方法栈和java虚拟机栈的功能很相似，
+java虚拟机栈用于管理java函数的调用，而本地方法栈用于管理本地方法的调用。
+
+本地方法并不是用java来实现的，而是使用c来实现的。
+在SUN的hot spot虚拟机中，不区分本地方法栈和虚拟机栈。
+所以，和虚拟机栈一样，它也会抛出StackOverflowError OutOfMemoryError。
+
