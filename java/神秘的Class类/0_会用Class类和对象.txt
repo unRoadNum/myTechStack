@@ -16,6 +16,6 @@ Class对象就是Class类的一个实例。
 怎么找到Class对象？
 有3种办法。
 1. 通过Object提供的getClass方法获得类对应的class对象
-2. 通过Class类的static方法forName("包名+类名")，用类名获得class对象
+2. 通过Class类的static方法forName("包名+类名")，用类名获得Class对象
 3. 通过类名.class的方法获得对应的class对象
 
