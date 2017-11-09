@@ -1,0 +1,27 @@
+#Class对象与类加载#
+
+在类的生命周期中，第一步就是加载。
+这个加载的过程，就是由类加载器来完成的。
+
+在类加载的时候，首先读入字节码，写入方法区；
+然后在堆里面生成Class对象，这里面保存了类方法区信息入口点;
+可以根据Class对象来找到对应类在方法区中的存储内容。
+
+那就得研究一下Class类/对象的一些常用方法了：
+1. public static Class<?> forName(String className)
+	* 可以根据该方法动态加载类
+2. public T newInstance();
+	* 可以根据Class对象新建一个类对象，一般用于反射
+3. public ClassLoader getClassLoader();
+	* 获取类加载器，以后看出它不是static方法，所以可以区分出来它是获得待加载类的加载器。
+4. public String getName();
+	* 获得类或者接口的名字
+5. public native Class getSuperClass();
+	* 获取类的父类
+6. public native int getModifiers();
+	* 获取修饰符，用于反射
+7. public Method[] getMethods();
+	* 获得方法
+8. public Construct<?> [] getConstructors();
+	* 获取所有构造函数
+...
