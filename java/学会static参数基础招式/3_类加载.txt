@@ -1,0 +1,40 @@
+#类加载#
+
+java.lang.ClassNotFoundException;
+该异常就是类加载失败。
+
+类加载 != 加载
+前面类的生命周期中有个加载阶段，但是这个加载可不是类加载。
+其实这个也没什么用，就是一个表达的习惯。
+java程序员都把加载、链接、初始化三个阶段统一称为类加载。
+
+要完成这类加载这3个阶段的关键角色就是：类加载器
+
+jvm预定义了三种类型的类加载器：
+1. BootStrap启动类加载器
+2. Ext扩展类加载器
+3. System系统类加载器: AppClassLoader 
+
+类加载器也是Java类，因为java类的类加载器本身也是要被类加载器加载的。
+显然第一个类加载器不是java类，这个正是BootStrap。
+它是使用C/C++代码写的。
+
+类加载器的属性结构图：
+1. BootStrap -->  jre/lib/rt.jar
+2. ExtClassLoader  --> jre/lib/ext/*.jar
+3. AppClassLoader --> classpath指定的所有jar或目录
+4. MyClassLoader1、MyClassLoader2 --> 加载我们自己指定的目录中的class
+
+它们之间的关系如下：
+MyClassLoader1.getSystemClassLoader() == AppClassLoader;
+MyClassLoader1.getSystemClassLoader().getParent() == ExtClassLoader;
+MyClassLoader1.getSystemClassLoader().getParent().getParent() == null;
+
+#类加载的委托机制：#
+当jvm要加载一个类的时候，到底选择哪个类加载器去加载？
+答案是：
+每当类加载器加载类时，又先委托给其上级加载器。
+当所有上级加载器都没有加载到类，回到发起者类加载器。
+如果还加载不了，则会抛出ClassNotFoundException!
+
+System、List、Map等这样系统提供的jar类都在rt.jar中，所以由BootStrap加载。
