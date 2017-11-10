@@ -1,0 +1,22 @@
+#动态代理#
+
+动态代理最大的特点是在运行时，动态生成代理类。
+这样就解决了手动去维护多个代理方法的烦恼。
+
+怎么实现运行时动态生成呢？
+只需要将代理类的字节码将在运行时生成并载入当前的ClassLoader。
+
+实现动态代理类的方法很多，先用jdk来实现来研究一下，以期突破瓶颈。
+以下只实现动态代理，主题接口和真实主题就略过了。
+```
+public class JdkDBQueryHandler implements InvocationHandler {
+	private IDBQuery dbQuery;
+
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args){
+		
+	}
+}
+
+```
+
