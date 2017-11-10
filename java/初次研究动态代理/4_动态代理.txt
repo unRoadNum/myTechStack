@@ -13,10 +13,20 @@ public class JdkDBQueryHandler implements InvocationHandler {
 	private IDBQuery dbQuery;
 
 	@Override
-	public Object invoke(Object proxy, Method method, Object[] args){
-		
+	public Object invoke(Object proxy, Method method, Object[] args) throw Throwalbe {		
+		if(dbQuery == null) {
+			dbQuery = new DBQuery();
+		}
+		return dbQuery.request();
+	}
+	
+	public static IDBQuery getJdkDbProxy() {
+		IDBQuery jdkProxy = (IDBQuery)Proxy.newProxyInstance(
+			ClassLoader.getSystemClassLoader(),
+			new Class[] {IDBQuery.class},
+			this);
+		return jdkProxy;
 	}
 }
-
 ```
 
