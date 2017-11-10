@@ -1,0 +1,26 @@
+#包装类#
+
+8种基本类型对应8种包装类。
+
+除了int变成了Integer， char变成了Character;
+其余的只是变成了它们应该有的类名
+	* 因为类名首字母是要大写的
+	
+包装类中有一些常用的方法，学一点防身还是比较屌的。
+
+比如Integer类中的 parseInt方法。
+public static int parseInt(String s); //将字符串转化为整型基本类型
+public static int parseInt(String s, int radix);  //可以指定进制
+public static String toString(int i);
+
+JDK5.0以后，编译器又为了方便了包装类的使用，要帮我们做事，:)。
+做什么事呢？
+帮我们转换包装类和基本类型，官方叫：自动拆装箱。
+
+Integer i = 100;  //这个叫装箱
+	* 其实就是编译器帮我们将它换成了 Integer i = new Integer(100);
+
+int a = new Integer(250); //这个叫拆箱
+	* 其实就是编译器执行了 int a = new Integer(250).intValue();
+	
+
