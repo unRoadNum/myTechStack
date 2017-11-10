@@ -1,0 +1,69 @@
+#静态代理#
+
+代理模式的系统角色一般有4个：
+1. 主题接口
+2. 真实主题
+3. 代理类
+4. Main类
+
+以系统初始化，延迟加载数据库为例：
+
+#主题接口是IDBQuery#
+主要加载数据库，也就是连接数据库比较耗费时间，而这些东西都应该是
+数据库操作对象初始化中的一部分。所以主题接口是IDBQuery，数据库操作接口。
+
+#真实主题是DBQuery#
+根据依赖倒置原则，程序要依赖于接口，不应该依赖于具体实现。
+所以才有了主题接口，真实主题，这两个东西。
+
+#代理类DBProxy#
+它是代理对象的核心。
+
+#Main类#
+客户端，使用代理类和主题接口来完成工作。
+对于真实主题，它看不见的。
+
+下面还是看看代码是怎么做的么。
+```
+//主题接口
+public interface IDBQuery{
+	String request();
+}
+//真实主题
+public class DBQuery implements IDBQuery{
+	public DBQuery(){
+		try{
+			Thread.sleep(1000);  //模拟连接数据库的耗时操作
+		} catch(InterruptedException e){
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public String request(){
+		return "request string";
+	}
+}
+//代理类
+public class DBQueryProxy implements IDBQuery {
+	private DBQuery real = null;
+	@Override
+	public String request(){
+		//当真正需要的时候，才创建真实对象，创建过程可能很慢
+		if(real == null){
+			real = new DBQuery();
+		}
+		//在多线程环境下，这里可以返回一个虚假类，类似于Future模式
+		return real.request();
+	}
+}
+//最后客户端主函数
+public class Main {
+	public static void main(String[] args){
+		IDBQuery q = new DBQueryProxy();  	//使用代理
+		q.request();  //在真正使用的时候才创建对象
+	}
+}
+```
+
+
+
