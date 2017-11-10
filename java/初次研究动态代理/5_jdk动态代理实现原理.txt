@@ -19,3 +19,7 @@ Class类的方法、Constructor类以及Method类的方法都是jvm为调用对�
 
 接着我们就来研究一下jdk动态加载的底层实现原理。
 
+先研究一下，Proxy类的newProxyInstance方法。
+这个东西从名字上完全就会让人蒙圈。
+如果你不知道，还以为是Proxy类提供了一个生成Proxy对象的方法。
+如果想要一个Proxy对象，new Proxy()就行了么，非得这样。
