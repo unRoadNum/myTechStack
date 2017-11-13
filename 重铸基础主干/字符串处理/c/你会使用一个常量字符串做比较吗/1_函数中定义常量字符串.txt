@@ -1,0 +1,49 @@
+#在函数中定义常量字符串#
+
+"定义"这个词语在专业上肯定是不对的。
+但是它却是我现在最想用的，而且会引出很多子问题。
+
+我在思考这个问题时有几个小的关键点。
+
+1. 在函数中怎么用这个常量字符串？
+是直接用呢？比如sip:anonymous@anonymous.invalid，
+还是定义一个指针去引用它，比如指针INT8 *pucAnonyUser = "sip:anonymous@anonymous.invalid";
+还是定义一个结构体，去memcpy它，比如：
+typedef struct
+{
+	UINT8	aucStr[STRING_LENGTH];
+	UINT32	ulStrLen;
+}STRING_T;
+STRING_T	stAnonyUser;
+
+UINT32 ulLen = strlen("sip:anonymous@anonymous.invalid"); //这样用好丑陋，越看越别扭
+memcpy(stAnonyUser.aucStr, "sip:anonymous@anonymous.invalid", ulLen);
+
+先说直接用吧，直接用第一直觉告诉我，函数中到处都是常字符串。
+不仅写起来不方便，修改起来也不容易。
+那我改进一下，比如#在函数中#增加宏定义去解决丑陋这个问题。
+如果在多个函数中都有，则增加到头文件中。
+#define XXX_ANNONYUSER_STRING "sip:anonymous@anonymous.invalid"
+但是在比较的时候，我还要计算匿名字符串的长度，得来一个
+UINT32 ulLen = strlen(XXX_ANNONYUSER_STRING);
+我在strcmp的时候，用strcmp(stCaller.aucStr, XXX_ANNONYUSER_STRING)
+
+用指针去引用字符串，该指针在函数定义局部变量的时候，直接初始化。
+然后跟上面一样，定义len变量去配合比较。
+这样的好处是虽然指针指向的字符串不能变，但是指针指向可以变。
+这里有个需要注意的问题：#C语言char字符默认是signed char类型的#
+这个办法是我认为最美观大方的一种方式，以后我自己要用这种方式来做字符串常量"容器"。
+
+最后一种，操作字符串都当做一个结构去操作，符合一点模块的思想。
+为什么说一点，因为它就带了一个长度。
+而且这个东西有个祸害：有时候操作的时候，没有保持两个成员变量的一致性，很容易出问题。
+除非这个length跟java一样不用程序员自己去维护，但是c就是这样啊，你得自己去做这件事。
+好矛盾，好矛盾。
+
+2. 常量字符串的释放问题
+可能最近看jvm中毒了，感觉是个东西都可能要释放。
+字符串常量是不需要释放的，只有堆中的分配释放才会由程序员来完成。
+
+
+
+
