@@ -6,12 +6,24 @@
 
 如下：
 ```
-int fun(XX_STRING_T ** ppstStr)
+typdef struct
+{
+	char  aucStr[23];
+	int length;
+}XX_STRING_T;
+
+typdef struct 
+{
+	XX_STRING_T	stUserName;
+	XX_STRING_T stPassWord;
+}XX_HTTP_T;
+
+int fun(XX_HTTP_T ** ppstStr)
 {
 	if(NULL == ppstStr)
 		return xx_error;
 	
-	*ppstStr = (XX_STRING_T*)malloc(sizeof(XX_STRING_T));
+	*ppstStr = (XX_HTTP_T*)malloc(sizeof(XX_HTTP_T));
 	if(*ppstStr == NULL)
 		return xx_error;
 		
@@ -20,13 +32,18 @@ int fun(XX_STRING_T ** ppstStr)
 int main(int argc, char **argv)
 {
 	int iRet = xx_success;
-	XX_STRING_T *pstStr = NULL;
-	XX_STRING_T **ppstStr = &pstStr;
+	char *pucUser = "administrator";
+	//给返回地址分配栈空间存储
+	XX_HTTP_T *pstStr = NULL;
+	//注意这里，要体会
+	XX_HTTP_T **ppstStr = &pstStr; 
 	
 	iRet = fun(ppstStr);
 	if(iRet != xx_success)
 		return iRet;
-	...
+		
+	//->的优先级比*的优先级高
+	memcpy((*ppstStr)->stUserName.aucStr, pucUser, sizeof(pucUser));
 	return xx_success;
 }
 ```
