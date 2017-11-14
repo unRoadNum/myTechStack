@@ -1,0 +1,55 @@
+#HashMap内部实现中的Entry#
+
+#如果要研究HashMap的内部实现，我最想知道的肯定是在内部的一对数据是如何存放的。#
+事实上HashMap内部是用称为Entry类实例化的对象来存储一对数据的。
+
+#HashMap中的Entry类来源#
+HashMap定义了静态类Entry, 实现了Map接口中内部类Map.Entry。
+```
+private static class Entry<K,V> implements Map.Entry<K,V> {
+	int hash;
+	final K key;
+	V value;
+	Entry<K,V> next;  //用来实现单链表
+	
+	/* protected关键字主要用来控制该方法在不同包里只有子类能访问
+	 * 在同一个包里表现的跟public一样 */
+	protected Entry(int hash, K key, V value, Entry<K,V> next) {
+		this.hash = hash;
+		this.key = key;
+		this.value = value;
+		this.next = next;
+	}
+	
+	protected Object clone() {
+		return new Entry<>(hash, key, value, (next == null ? null : (Entry<K,V>)next.clone()));
+	}
+	
+	public K getkey() {
+		return key;
+	}
+	
+	public V getValue() {
+		return Value;
+	}
+	
+	public V setValue(V value) {
+		if(value == null)
+			return new NullPointerException();
+		
+		V oldValue = this.value;
+		this.value = value;
+		return oldValue; //注意这里返回的oldValue的用户
+	}
+	
+	public boolean equals(Object o) {
+		if(!(o instanceof Map.Entry))
+			return false;
+		Map.Entry<?,?> e = (Map.Entry)o;
+	}
+	
+	public String toString() {
+		return key.toString() + "=" + value.toString();
+	}
+}
+```

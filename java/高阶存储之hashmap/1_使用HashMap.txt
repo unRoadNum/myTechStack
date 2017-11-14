@@ -1,0 +1,53 @@
+#HashMap的使用#
+
+HashMap不仅能查，而且能插。
+这里的能可不是"一般的能"，是擅长的意思。
+我相信我自己一定会爱上它的，麻痹，就是jdk给我们提供的趁手的工具啊。
+你再也会苦苦的插入数组元素，一遍遍的去挪动。
+虽然有了HashMap以后，自己不用去维护它，但是并不代表它没有做这些事。
+只不过是jdk爸爸帮我们做的，但是我们还是要知道爸爸到底做了些什么。
+
+学会用HashMap。
+
+```
+public class MyServer extends Thread {
+	
+	private ServerSocket serverSocket;
+	//其实就这段用了HashMap去初始化了一下，o(╯□╰)o
+	public static Map<String, String> Map = new HashMap<String, String>();
+	
+	public MyServer(int port) {
+		serverSocket = new ServerSocket(port);
+		serverSocket.setSoTimeout(10000);
+	}
+	
+	public void run() {
+		while(true) {
+			try {
+				Socket server = serverSocket.accept();
+				BufferInputStream in = new BufferInputStream(server.getInputStream());
+				System.out.println(in.readUTF);//字节流得编码
+				BufferOutputStream out = new BufferOutputStream(server.getOutputStream());
+				out.writeUTF("谢谢你连接我 " + server.getLocalSocketAddress() + "\nGoodBye!");
+				server.close();
+			} catch (SocketTimeoutException e) {
+				System.out.println("Socket Time out!")
+				break;
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		int port = Integer.parseInt(args[0]);
+		try {
+			Thread t = new MyServer(port);
+			t.run();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
+```

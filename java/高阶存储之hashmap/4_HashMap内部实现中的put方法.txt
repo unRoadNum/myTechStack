@@ -1,0 +1,33 @@
+#put方法#
+
+put方法要考虑的因素有几点：
+1. 如何构造hash索引，才能使得冲突最小
+2. 如果发生冲突，是用头插法，还是用尾插法来组织到单链表中
+3. put的时候，如果bucket超过阈值，怎么resize？
+4. 假如resize了，怎么把旧的bucket的Entry转移到新的bucket中。
+
+#构造索引#
+
+#hashCode#
+java中有个hashCode方法，这个方法被写在了Object类中。
+public native int hashCode();
+#这个东西的存在就是为了给不同的对象生成的不同返回值#
+java这样做了以后，虽然会给查找带来重大的意义(不同对象不同hashCode，定位到不同的对象，可能jvm就是这样实现找对象的？)。 
+而且不同的散列值，在Map中将Entry放到不同的bucket中也会带来非常方便的影响。
+但是，虽然hashCode不等，两个对象一定不等；但是，但是hashCode相等，两个对象的也不一定相等。（拗口啊）
+
+
+1. 可以比较两个对象是否相等，。
+所以对象的equals方法和hashCode这东西是相辅相成的。
+我自己的看法是java在设计之初，也就是想让equals用来比hashCode的，但是发现hashCode相同，它们也不一定相等。
+今天才造成了它们这种藕断丝连的关系。历史的原因？
+这就是为什么会有那么多if(a == b || a.equals((Object)b)) 这个东西的存在
+2. 最最主要的是hashCode就是用来作查找用的，它会给不同的对象产生不同的hashCode，这对于散列意义重大。
+不同的hashCode，才会有利于放到不同的bucket中。
+在这里不关心它怎么生成的，有很多的办法。
+
+会有人说，有了hashCode以后，是不是就不可以用hashCode来当索引啊？
+
+
+
+

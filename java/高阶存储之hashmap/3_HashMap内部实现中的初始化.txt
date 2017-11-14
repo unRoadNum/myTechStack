@@ -1,0 +1,16 @@
+#HashMap内部实现中的初始化#
+
+知道了表达HashMap的键值对的类Entry以后，
+那键值对形成的Entry对象们在HashMap中是怎么组织的呢？
+
+为了更容易索引，Entry对象们首选肯定是数组形式，解决冲突的方式选择单链表。
+这个数组就是: transient Entry<K,V>[] table;
+table人们为了形象的表达装Entry，习惯叫做bucket，篮子。
+
+既然bucket是数组，它肯定有初始长度，即: static final int DEFAULT_INITIAL_CAPACITY = 16;
+初始长度是16，是有科学依据的，这个是涉及到后面hash算法的设计。
+16肯定是不够的，所以规定了装填因子loadfactor， 到了阈值以后会扩展bucket，即resize。
+static final float DEFAULT_LOAD_FACTOR = 0.75f
+
+#当bucket中的Entry超过了loadfactor*capacity以后，resize为原来的capacity的两倍。#
+
