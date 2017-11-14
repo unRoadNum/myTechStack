@@ -1,0 +1,33 @@
+#从函数中返回一个指针#
+
+说是从函数中返回一个指针。
+其实就是在函数内部申请的堆内存。
+我希望在调用函数(父函数)中拿到申请的地址。
+
+如下：
+```
+int fun(XX_STRING_T ** ppstStr)
+{
+	if(NULL == ppstStr)
+		return xx_error;
+	
+	*ppstStr = (XX_STRING_T*)malloc(sizeof(XX_STRING_T));
+	if(*ppstStr == NULL)
+		return xx_error;
+		
+	return xx_success;
+}
+int main(int argc, char **argv)
+{
+	int iRet = xx_success;
+	XX_STRING_T *pstStr = NULL;
+	XX_STRING_T **ppstStr = &pstStr;
+	
+	iRet = fun(ppstStr);
+	if(iRet != xx_success)
+		return iRet;
+	...
+	return xx_success;
+}
+```
+
