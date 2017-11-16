@@ -1,0 +1,77 @@
+#put方法深入分析#
+
+直接撸源码。
+```
+/**
+ * put的时候有几个关键点：
+ * 1. 有且仅能插入1个key值为null的键-值对，而且默认放在bucket[0]，当再次插入1个key为null的键-值对时候，后来的覆盖前面的。
+ * 2. hash函数是"扰动函数"，indexFor函数是根据hash求键-值对着bucket中索引的值。
+ * 3. recordAccess方法是HashMap内部类Entry的一个方法，该方法体内无任何内容，即不做任何事
+ * 4. 比较两个键-值对相同的原则是hash相同，key相同，这个可以在Entry类中看到，该类不仅保存key、value、next，还有hash(hashCode)的值
+ * 5. bucketet扩容的时候，长度翻倍，比如1，2, 4; 
+ * 6. 扩容以后，要重新计算index值，将原来的键-值对重新移位
+ */
+ 
+public V put(K key, V value) {
+	if (key == null) 
+		return putForNullKey(value);
+	int hash = hash(key);
+	int i = indexFor(hash, table.length);
+	for(Entry<K,V> e = table[i]; e != null; e = e.next) {
+		Object k;
+		if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+			V oldValue = e.value; //这里不是头插法，这是只是覆盖相同的元素，比较两个键-值对相同的原则是hash相同，key相同
+			e.value = value;
+			e.recordAccess(this); //这个方法在HashMap的内部类Entry中是空的，啥都不做
+			return oldValue;
+		}
+	}
+	
+	modCount++;
+	addEntry(hash, key, value, i); //如果bucket上的table[i]位置为空，直接调用addEntry方法将元素加入，返回null
+	return null;
+}
+
+private V putForNullKey(V value) {
+	for(Entry<K,V> e = table[0]; e != null; e = e.next) {
+		if(e.key == null) { //当0号位置已经有1个Entry的时候，该Entry会被新来的覆盖
+			V oldValue = e.value;
+			e.value = value;
+			e.recordAccess(this);
+			return oldValue;
+		}
+	}
+	
+	modCount++;
+	addEntry(0, null, value, 0);
+	return null;
+}
+
+void addEntry(int hash, K key, V value, int bucketIndex) {
+	if((size >= threshold) && (null != table[bucketIndex])) {
+		resize(2 * table.length); //如果bucket，超过当前阈值, resize
+		hash = (null != key) ? hash(key): 0; //因为resize的时候，我怀疑这里根本不用再求一遍hash，因为length变化根本不影响扰动函数
+		bucketIndex = indexFor(hash, table.length); // hash & (table.length - 1)
+	}
+	
+	createEntry(hash, key, value, bucketIndex);
+}
+
+void createEntry(int hash, K key, V value, int bucketIndex) {
+	Entry<K,V> e = table[bucketIndex];
+	table[bucketIndex] = new Entry<>(hash, key, value, e); //在Entry的构造函数连接下一个Entry，贯彻头插法
+}
+
+public HashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneable, Serializable {
+	
+	...
+	static class Entry<K,V> implements Map.Entry<K,V> {
+		void recordAccess(HashMap<K,V> m) { //该方法无任何方法体
+		}
+	}
+	...
+}
+```
+
+
+
