@@ -1,0 +1,35 @@
+#在泛型中使用边界符#
+
+现在目前有这样一个功能：
+查找一个泛型数组中大于某个特定元素的个数
+
+```
+public static <T> int countGreaterElem(T[] array, T elem) {
+	int count = 0;
+	for(T e: array) {
+		if( e > elem)		//编译错误
+			++count;
+	}
+	return count;
+}
+```
+除了基本类型以外，其他的类并不一定能使用操作符 > ，所以编译器报错。
+
+那应该怎么解决这个问题呢？答案是使用边界符
+```
+public interface Comparable<T> {
+	public int compareTo(T o);
+}
+
+//这样编译器就可以知道T是继承了Comparable接口，注意这里可没有implement关键字用
+public static <T extends Comparable<T>> int countGreaterElem(T[] array, T elem) {
+	int count = 0;
+	for(T e: array) {
+		if(e.compareTo(elem) > 0)
+			++count;
+	}
+	return count;
+}
+```
+
+
