@@ -1,0 +1,28 @@
+#为什么要使用通配符和边界符#
+
+<? super T>和<? extends T>中的？是通配符，而extends和super是边界符关键字。
+
+为什么要使用通配符和边界符？
+
+```
+public class Fruit {}
+public class Orange extends Fruit {}
+public class Apple extends Fruit {}
+
+public class Plate<T> {
+
+	private T item;
+	public Plate(T t) { item = t; }
+	public void set(T t) { item = t; }
+	public T get() { return item; }
+}
+
+//现在定义一个"水果盘子"，逻辑上"水果盘子"当然可以装"苹果"
+Plate<Fruit> p = new Plate<Apple>(new Apple());
+//但是实际上java的编译器是不允许这样干的，会报错，"装苹果的盘子"无法转换成"装水果的盘子"。
+```
+所以，就算容器中装的东西有继承关系，但容器之间没有没继承关系。
+所以不可以把Plate<Apple>的引用传递给Plate<Fruit>。
+
+为了让泛型用起来更加的舒服，Sun就想出了<? super T>和<? extends T>的办法，
+来让"装苹果的盘子"和"装水果的盘子"发生关系。
