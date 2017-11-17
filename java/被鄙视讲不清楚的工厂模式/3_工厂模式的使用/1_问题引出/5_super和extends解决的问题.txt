@@ -1,0 +1,27 @@
+#extends和super#
+
+这两个边界符都是解决泛型之间继承关系的。
+也就是解决盘子之间继承关系的。
+要不苹果、水果有关系，但是装它们的盘子却没有关系。
+
+#extends#
+```
+Plate<? extends Fruit>
+```
+上界通配符。
+它表示：一个能放水果以及一切是水果派生的盘子。啥水果都能放的盘子。
+它就是java用来表示Plate<? extends fruit>是Plate<Apple>的父类。
+
+这样就可以使用Plate<? extends Apple> plate = new Plate<Apple>(new Apple());
+
+#super#
+```
+Plate<? super Fruit>
+```
+下界通配符，和extends相反，表示一个能放水果以及一切是水果基类的盘子。
+它就是java用来表示Plate<? super Fruit>是Plate<Fruit>的父类，但不是Plate<Apple>的父类。
+
+它们两将泛型的继承关系分成了两段来处理。
+上面是: Plate<? super Fruit> 是Plate<Fruit>的父类。
+下面是：Plate<? extends Fruit>是Plate<Apple>的父类。
+注意这个上面只是从树形关系图上说的上面，上面有下界通配符; 下面有上界通配符。一分为二。
