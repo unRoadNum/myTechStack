@@ -1,0 +1,41 @@
+#泛型中使用工厂模式#
+
+因为泛型的类型擦除，所以不能new T()。
+但是我们能通过工厂模式来解决这个问题。
+
+```
+public class Foo<T> {
+	private T t;
+	public Foo() {
+		t = new T();  //这样是不允许的
+	}
+}
+```
+
+```
+public interface IFactory<T> {
+	T create();
+}
+
+public class Foo<T> {
+	private T t;
+	public <F extends IFactory<T>> Foo(F factory) {
+		factory.create(); //在调用factory方法的时候得让编译器知道它由这个方法，所以用了extends关键字
+	}
+}
+
+/* 以下用了内部类来实现了factory，大概内部类就是为了说话的时候不啰嗦吧，也挺好的。
+ * 为了表达不啰嗦就用内部类，这个跟说话一样，得自己在场景中感觉。
+ */
+new Foo(new IFactory<Integer> {
+	Integer create() {
+		return new Integer(0);
+	}
+)
+
+new Foo(new IFactory(<String> {
+	String create() {
+		return "Hello";
+	}
+)
+```
