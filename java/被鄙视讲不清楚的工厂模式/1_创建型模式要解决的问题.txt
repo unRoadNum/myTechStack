@@ -1,0 +1,31 @@
+#工厂模式思考#
+
+建立工厂之初是为了怕麻烦，只给用户一个见名知意的方法名，例如AProductFactory.getAProductInstance()。
+
+有了专人管理这件事以后，用户的角色更加单一，变成了产品的使用者，不用关系产品的创建过程。
+比如之前提到的A和B产品的例子：
+```
+//简单的工厂模式
+public class SimpleFacotry {
+	public static IProduct getProduct(String name) {
+		if("A".equals(name)) {
+			return new AProduct(name);
+		} else if("B".equals(name)) {
+			return new BProduct(name);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+}
+```
+通过增加一个工厂模块向用户隐藏了产品的创建细节，进一步细化用户业务模块的功能。
+这些模式都是通过增加一个模块去降低两个模块之间的耦合，让增加的模块去承担一部分功能。
+#通常增加了模块，都会产生一些普适性的好处，它不仅仅存在于工厂模式#
+假设在模块A和B之间增加了一个模块C，从上到下为A->C->B。B的变化只会影响到C，而不会到A
+
+工厂模式因为增加了工厂，而产品构造过程的变化，不会影响到使用产品的用户。
+只是产品的构造过程的变化不会影响，如果产品的方法变化还是会影响到用户。
+一般也不会让产品的方法发生变化，因为产品方法都是统一在interface上的，不会允许interface中方法的变化。
+但是inteface中定义的方法具体实现的修改，对于用户也是不可见的，是安全的，允许的。
+
+

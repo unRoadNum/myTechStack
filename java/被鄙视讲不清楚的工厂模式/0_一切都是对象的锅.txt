@@ -1,0 +1,60 @@
+#问题的来源#
+
+以前看过一句话，当你写代码有了一定的感觉以后，对new对象都会变得谨慎。
+
+你一定写过功能类似的类，这个时候你就想要把它们进行再次抽象，然后#使用接口去暴露公共的方法， 使用抽象类去提供公共的实现#。
+
+如下：
+```
+public interface IProduct {
+	void print();	//这个就是要暴露的公共方法
+}
+
+public class AbstractProduct implements IProduct {
+	protected void printBefore() {
+		System.out.println("before print");	//这里是要提供的公共实现
+	}
+}
+
+public class AProduct extends AbstractProduct {
+	private String name;
+	public AProduct(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public void print() {
+		this.printBefore();
+		System.out.println("print A >>>" + name);
+	}
+}
+
+public class BProduct extends AbstractProduct {
+	private String name;
+	private int count;
+	public BProduct(String name, int count) {
+		this.name = name;
+		this.count = count; //比AProduct类多一个count初始化操作
+	}
+	
+	@Override
+	public void print() {
+		this.printBefore();
+		System.out.println("print B >>>" + name);
+	}
+}
+```
+
+但是，这些产品的实现伴随着类的数量的变化，实例化成了问题。
+每个类的构造方法参数还不一样，很麻烦。
+
+#其实我觉着工厂模式最大的用处就是为了解决new对象的麻烦，别的好处都是后来的副作用#
+说白了，就是不想new对象的时候传入那么多参数。
+子类不同构造方法有很多复杂的参数，根据传入的参数，有不同的用处，这样就生成了不同的对象。
+比如线程池的工厂会针对参数生成不同的线程。
+对于使用产品的用户来说，我压根就不想知道它是怎么产的（构造方法），我就想知道它能干啥（普通方法）。
+从这一点来说，工厂模式这种创建型模式分离了类构造方法和普通方法的使用场景。
+如果它根本不需要输入什么复杂的参数，直接new就很方便的话，根本用不上工厂。
+
+
+

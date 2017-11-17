@@ -1,0 +1,39 @@
+#简单向抽象的递进#
+
+给用户一个工厂，用户用什么产品就去找工厂。
+工厂按照产品的构造去生产，但是每增加一个产品就需要在工厂中增加一个switch case/if else。
+
+这样是不利于工厂的扩大发展的，违背了开闭原则。
+我们需要对工厂动刀子了。
+
+```
+public class interface IFactory {
+	IProduct getProduct();
+}
+
+public class AFactory implements IFactory {
+	@Override
+	public IProduct getProduct() {
+		return new AProduct(AProduct.class.getName());
+	}
+}
+
+public class BFactory implements IFactory {
+	@Override
+	public IProduct getProduct() {
+		return new BProduct(BProduct.class.getName());
+	}
+}
+```
+
+这样把简单的工厂抽象化以后，似乎解决了工厂的可扩展性。
+但是忽然发现Product类是3层结构，工厂类是2层结构，产品越来越多，工厂会越来越多。
+
+所以需要轻量化设计（以下都不分主次，在实际使用中自己权衡）：
+1. 对于构造不复杂的小型产品，例如构造函数是默认的，直接去new。
+2. 对于构造方法不需要用户知道的，增加工厂
+3. 对于相近的产品，归到一个工厂中去实现，最大限度的提高工厂的使用率，O(∩_∩)O~~
+比如让生产枪械的，也生产子弹，等到它的产能不足时，再去分离它们。
+
+
+
