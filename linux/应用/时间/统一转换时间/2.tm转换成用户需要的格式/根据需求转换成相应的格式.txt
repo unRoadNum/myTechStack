@@ -1,8 +1,0 @@
-# 根据需求转成相应格式
-
-***
-size_t strftime(
-char *outstr, 
-size_t maxsize, 
-const char *format,
-const struct tm *timeptr);
