@@ -1,0 +1,36 @@
+#pidstat工具#
+
+这个工具需要下载，它是Sysstat的组件之一。
+下载后，可以通过./configure、 make、 make install安装该工具。
+
+#./configure,make,make install的作用#
+这些都是典型的使用GNU的AUTOCONF和AUTOMAKE产生的程序的安装步骤。
+./configure是用来检测你的安装平台的目标特征的。
+比如它会检测你是不是有CC或GCC，并不是需要CC或GCC，它是个shell脚本。
+make是用来编译的，它从Makefile中读取指令，然后编译。
+make install是用来安装的，它也从Makefile中读取指令，安装到指定的位置。
+AUTOMAKE和AUTOCONF是非常有用的用来发布C程序的东西。
+
+#对进程的cpu使用率的监测#
+pidstat -p 进程id 采样周期 采样次数	-u -t
+-u 是对cpu进行监测
+-t 是监测细化到线程
+例如，pidstat -p 1946 1 3 -u -t
+该输出中tid就是线程号，tgid是进程号
+
+#对进程的IO使用率监测#
+pidstat -p 进程id 采样周期 采样次数 -d -t
+-d 是对IO进行监测
+
+#对进程的内存进行监测#
+pidstat -p 进程id 采样周期 采样次数 -r 
+-r 是对内存进行监测
+
+内存监测的输出参数分析
+minflt/s: 表示该进程每秒minor faults(不需要从磁盘中调出内存页)的总数
+majflt/s: 表示该进程每秒major faults(需要从磁盘中调出内存页)的总数 
+VSZ: 表示该进程使用的虚拟内存大小，单位为KB 
+RSS：表示该进程占用的物理内存大小，单位为KB 
+%MEM： 表示占用内存比
+
+
