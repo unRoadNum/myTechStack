@@ -1,0 +1,22 @@
+# /dev/zero
+
+原理
+***
+/dev/zero实际上产生连续不断的null流（二进制的零流），写入它的输出也会不见，
+但从/zero/zero读出一连串的null也比较困难。
+
+应用场景
+***
+1. /dev/zero主要用来创建一个指定长度用户初始化的空文件，就像临时交换文件
+2. 用零去填充一个指定大小的文件
+
+与/dev/null不同
+***
+/dev/zero通常用于输入文件，而/dev/null通常用于输出文件
+
+例子
+***
+# 将filename1的内容写入/dev/null
+cat $filename1 > /dev/null
+# dd命令是把if指定的输入文件内容按块写入of指定的输入文件, count指定了块数，bs指定块大小
+dd if=/dev/zero of=$DEVICE count=$SIZE bs=$BLOCKSIZE
