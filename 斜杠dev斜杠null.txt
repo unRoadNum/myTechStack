@@ -1,9 +1,0 @@
-# /dev/null
-
-应用场景：
-***
-相当于一个只写文件，从它读不出任何内容;
-1. 禁止标准输出、标准错误
-	** cat $filename > /dev/null
-2. 删除文件内容，但保护文件本身
-	** cat /dev/null > /var/log/messages
