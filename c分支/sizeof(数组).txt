@@ -1,4 +1,0 @@
-# sizeof(สýื้)
-***
-char str[] = "hello world";
-sizeof(str) = 11;
