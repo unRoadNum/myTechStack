@@ -1,6 +1,0 @@
-# 文件读写
-
-# 区别
-***
-fopen和open
-fprintf和write
