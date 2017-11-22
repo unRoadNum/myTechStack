@@ -1,0 +1,19 @@
+#sar命令#
+
+sar [option] [<interval> <count>]
+
+option是功能选择参数，interval、count是采样周期和采样数量
+
+option
+-A:	所有报告的总和
+-u: cpu使用率
+-d: 硬盘使用报告
+-b: I/O的情况
+-q：查看队列长度
+-r: 内存使用统计
+-n: 网络信息统计
+-o: 采样结果输出到文件
+
+sar -b 1 3
+统计I/O的使用情况，每秒钟采样1次，共计采样3次
+
