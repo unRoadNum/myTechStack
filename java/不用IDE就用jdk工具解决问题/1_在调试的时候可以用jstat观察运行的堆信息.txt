@@ -1,0 +1,21 @@
+#jstat工具#
+
+使用格式：
+jstat -<option> [-t] [-h<lines>] 进程号 采样周期 采用次数
+
+option:
+-class: 显示ClassLoader的相关信息
+-compiler: 显示JIT编译的相关信息
+-GC： 显示与GC相关的堆信息
+-gccapacity: 显示各个代的容量及使用情况
+-gccause: 显示与垃圾收集相关的信息，同时显示最后一次或当前正在发生的垃圾收集的诱发原因
+-gcnew: 显示新生代信息
+-gcnewcapacity： 显示新生代大小与使用情况
+-gcold: 显示老年代与永久代的信息
+-gcoldcapacity：显示老年代的大小
+-gcpermcapacity: 显示永久代的大小
+-gcutil: 显示垃圾收集信息
+-printcompilation: 输出JIT编译的方法信息
+
+-t 参数： 可以在输出信息前加一个Timestamp列，显示程序的运行时间
+-h 参数： 可以在周期性数据输出时，输出多少行数据后，跟着输出一个表头信息
