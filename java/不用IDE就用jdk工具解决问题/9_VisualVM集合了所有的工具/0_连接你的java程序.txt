@@ -1,0 +1,10 @@
+Visual VM是一个功能强大的多合一故障诊断和性能监控的可视化工具。
+它集成了多种性能统计工具的功能，使用Visual VM可以代替jstat/jmap/jhat/jstack/JConsole。
+在JDK6 Update7以后，Visual VM便作为JDK的一部分发布，它完全免费。
+
+安装插件也很容易。
+可以通过离线下载插件文件*.nbm，然后在Plugin对话框的download页面下，添加已下载的插件。
+也可以在Availble Plugin页面下，在线安装插件。
+
+连接你的java程序。
+
