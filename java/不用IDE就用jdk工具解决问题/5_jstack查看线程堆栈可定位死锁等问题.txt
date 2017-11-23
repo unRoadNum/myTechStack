@@ -1,0 +1,9 @@
+#jstack工具#
+
+jstack可用来查看线程堆栈，来定位死锁等问题。
+它可以自动找出死锁问题。
+
+使用格式：
+jstack [-l] [pid]
+
+比如，jstack -l 2348 >c:\deadlock.txt
