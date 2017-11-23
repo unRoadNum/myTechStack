@@ -1,0 +1,10 @@
+#jmap用来生成堆快照和对象信息#
+
+#生成对象信息#
+jmap -histo 2972 > c:\s.txt
+这个就是用jmap生成PID为2972的java程序的对象统计信息。
+
+#得到java程序的当前堆快照#
+jmap -dump:format=b,file=c:\heap.hprof 2972 
+将PID为2972的应用程序的堆快照输出到c盘的heap.hprof文件中
+.hprof文件可以用jhat工具/Visual VM工具打开
