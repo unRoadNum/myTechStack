@@ -1,0 +1,16 @@
+#监控java程序中各个方法的执行时间#
+
+hprof是一个代理工具，它可以监控运行时各个方法的cpu信息和堆信息等。
+
+#查看使用帮助#
+java -agentlib:hprof=help
+
+#记录各方法运行时间#
+java -agentlib:hprof=cpu=times,interval=10
+
+#记录运行时候的堆内存#
+java -agentlib:hprof=heap=dump,format=b,file=d:\core.hprof
+可以将应用程序的堆快照保存在指定的文件core.hprof
+
+#记录各个类的运行内存使用情况#
+java -agentlib:hprof=heap=sites
