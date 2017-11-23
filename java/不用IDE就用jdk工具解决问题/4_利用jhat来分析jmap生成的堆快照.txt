@@ -1,0 +1,12 @@
+#jhat工具#
+
+利用jhat来分析jmap生成的堆快照信息。
+
+jhat c:\heap.hprof
+在jhat分析完成以后，它会起一个7000端口的本地http服务器来展示其分析结果。
+只需要在浏览器中访问http://127.0.0.1:7000
+
+可以通过超链接来查看这些堆快照信息。
+当然，还支持更加智能的使用OQL语句来对堆快照查询。
+
+比如select file.path.value.toString() from java.io.File file
