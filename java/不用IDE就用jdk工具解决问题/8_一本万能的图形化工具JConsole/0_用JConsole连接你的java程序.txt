@@ -1,0 +1,18 @@
+JConsole
+JConsole是JDK自带的一个图形化性能监控工具。
+如果你不是工作在linux的命令行模式下，它可以提供了应用程序的：
+运行概况、监控堆信息、永久区使用情况、类加载情况等监控功能。
+
+它提供了这么多功能，如果你要使用它，第一步就是连接你的java程序。
+
+连接你的java程序。
+有两种连接方式，它支持连接本地java程序，也可以支持远程连接java程序。
+
+如果你需要使用它来连接远程进程，需要在你的远程java程序起来的时候，加上如下参数：
+```
+-Djava.rmi.server.hostname=127.0.0.1 //指定远程java程序运行的ip地址
+-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=8888 //jmx端口号
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+```
