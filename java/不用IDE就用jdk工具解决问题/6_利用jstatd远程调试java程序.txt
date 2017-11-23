@@ -1,0 +1,46 @@
+#远程调试java程序#
+
+有时候你需要远程调试java程序，jdk提供了jstatd来让你做这件事。
+jstatd顾名思义，就是一个jstat的服务器程序。
+你在远程启一个jstatd服务器，就可以在本地使用jps、jstat来调试远程的java代码。
+
+远程使用jstatd有些要注意的事项：
+
+当你直接使用jstatd的时候，
+C:\Users\bp>jstatd
+Could not create remote object
+access denied ("java.util.PropertyPermission" "java.rmi.server.ignoreSubClasses" "write")
+java.security.AccessControlException: access denied ("java.util.PropertyPermission" "java.rmi.server.ignoreSubClasses" "write")
+        at java.security.AccessControlContext.checkPermission(AccessControlContext.java:472)
+        at java.security.AccessController.checkPermission(AccessController.java:884)
+        at java.lang.SecurityManager.checkPermission(SecurityManager.java:549)
+        at java.lang.System.setProperty(System.java:792)
+        at sun.tools.jstatd.Jstatd.main(Jstatd.java:139)
+		
+它会提示你的权限不足，这个时候你需要使用java的安全策略，为其分配安全策略。
+比如你可以在d:盘根目录，新建一个jstatd.all.policy文件。
+写入
+grant codebase "file:D:/jdk/lib/tools.jar" {
+	permission java.security.AllPermission;
+};
+
+然后再启动jstatd：
+C:\Users\bp>jstatd -J-Djava.security.policy=D:\jstatd.all.policy
+
+-J是个公共参数，如jps、jstat等命令都可以接受这个参数，由于jps、jstat命令本身也是java程序，
+-J参数可以为jps等命令设置其JVM参数。
+
+这样的话，jstatd将在1099端口开启RMI服务器。
+可以通过：netstat -ano|findstr 1099
+
+C:\Users\bp>netstat -ano|findstr 1099
+  TCP    0.0.0.0:1099           0.0.0.0:0              LISTENING       7892
+上面命令显示，本机的1099端口处于监听状态，相关进程号是7892
+
+你也可以通过jps命令来查看
+C:\Users\bp>jps localhost:1099
+7892 Jstatd
+8120 Jps
+
+假如你在远程pc上可以看jstatd服务器上的460进程的GC情况。
+jstat -gcutil  460@localhost:1099
