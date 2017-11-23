@@ -1,0 +1,12 @@
+#jinfo可以查看当前程序运行的扩展参数#
+
+jinfo可以查看程序运行时的输入扩展参数，也可以支持在运行时修改部分参数。
+
+使用格式：
+jinfo <option> <pid>
+
+option:
+-flag<name>: 打印指定的jvm的参数值
+-flag [+|-] <name>: 设置指定的jvm参数的布尔值
+-flag<name>=<value>: 设置指定的jvm参数的值
+
