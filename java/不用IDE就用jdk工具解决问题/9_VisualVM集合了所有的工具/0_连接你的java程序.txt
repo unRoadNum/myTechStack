@@ -8,3 +8,36 @@ Visual VM是一个功能强大的多合一故障诊断和性能监控的可视化工具。
 
 连接你的java程序。
 
+#本地连接#
+Visual VM支持多种方式连接应用程序，最常用的就是本地连接。
+只要本地计算机内有java应用程序正在执行，在Visual VM的Local节点下，就会出现这些应用。
+
+然后双击应用程序或者右键打开，就能够监控应用程序的运行。
+由于Visual VM本身就java程序，因此自身也在列表中。
+
+#远程JMX连接#
+Visual VM也支持远程JMX连接。
+
+远程的java应用程序可以通过如下参数打开JMX端口：
+```
+-Djava.rmi.server.hostname=127.0.0.1
+-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=8888
+-Dcom.sum.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+```
+
+在本地File->add JMX Connection：
+在弹出的对话框中填写远程计算机地址、端口。
+
+添加成功以后，在Local节点下，就会出现一个JMX图标的应用程序。
+
+#连接远程主机#
+我的理解是Visual VM不仅提供了远程JMX连接，也支持远程的jstatd连接。
+
+远程主机可以通过jstatd工具建立，使用命令开启jstatd服务器。
+
+在本地Visual VM添加远程主机，，即add Remote Host。
+
+
+
