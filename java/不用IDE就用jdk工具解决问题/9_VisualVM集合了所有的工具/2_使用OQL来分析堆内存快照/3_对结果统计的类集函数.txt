@@ -1,0 +1,95 @@
+这是一种用于集合操作和统计的函数，可以方便的对结果集进行后处理或者统计。
+
+#contains()函数#
+判定给定集合是否满足给定表达式的对象。
+contains(set, exptr);
+set是给定集合，exptr是表达式。
+
+在exptr中可以使用如下内置对象：
+1. it：当前访问对象
+2. index：当前对象索引
+3. array：当前迭代的数组/集合
+
+//被File对象引用的String对象集合
+//首先通过referrers得所有引用String对象的对象集合，然后利用contains来筛选其中类名为java.io.File的对象集合
+select s.toString() from java.lang.String s where contains(referrers(s), "classof(it).name == 'java.io.File'")
+
+#count()函数#
+返回指定集合里面满足给定布尔表达式的对象数量
+count(set, exptr);
+
+//返回堆中所有java.io包中类的数量
+select count(heap.classes(), "/java.io./(it.name)");
+
+#filter()函数#
+返回给定集合中满足表达式的子集合
+filter(set, exptr);
+
+//返回所有java.io包中的类
+select filter(heap.classes(), "/java.io./(it.name)");
+
+#length()函数#
+返回给定集合的数量
+
+//返回当前堆中所有类的数量
+select length(heap.classes());
+
+#map()函数#
+将结果集中的每个元素按照给定的规则进行转换，方便输出显示
+map(set, exptr);
+
+//返回当前堆中所有File对象进行格式化输出
+select map(heap.objects("java.io.File"), "index + '=' + it.path.toString()")
+
+#max()函数#
+计算并得到集合中的最大元素。
+max(set, [exptr]);
+exptr中内置对象：
+lhs: 用于比较的左侧元素
+rhs: 用于比较的右侧元素
+
+//显示当前堆中，最长的String长度
+//先用heap.Objects获取所有String对象，然后用map函数将String对象集合转化成string对象长度集合
+//然后使用max来获取最大长度
+select max(map(heap.objects('java.lang.String', false), 'it.count'))
+
+//获取最大长度的字符串
+select max(heap.Objects('java.lang.String', 'lhs.count > rhs.count')
+
+#min()函数#
+计算并得到给定集合的最小元素
+min(set, [exptr]);
+
+//得到数组元素长度最长的一个Vector对象
+select min(heap.objects('java.util.Vector'), 'lhs.elementData.length > rhs.elementData.length')
+
+#sort()元素#
+给指定集合排序
+sort(set, exptr);
+
+//将当前堆中的所有Vector按照内部数组的大小进行排序
+select sort(heap.objects('java.util.Vector'), 'lhs.elementData.length - rhs.elementData.length')
+
+#top()函数#
+返回在给定集合中，按照特定顺序排序的前几个对象
+top(set, exptr);
+
+//显示当前堆中长度最长的前5个字符串
+select top(heap.objects('java.lang.String'), 'rhs.count - lhs.count', 5);
+
+#sum()函数#
+用于计算集合的累计值
+sum(set, [exptr]);
+
+//计算所有java.util.Properties对象的可达对象的总大小
+select sum(map(reachables(p), 'sizeof(it)')) from java.util.Properties p
+
+#unique()函数#
+用于除去指定集合中的重复元素，返回不包含重复元素的集合
+unique(set);
+
+//返回当前堆中多个不同的字符串
+select count(unique(map(heap.objects('java.lang.String'), 'it.value')))
+
+
+
