@@ -1,0 +1,23 @@
+heap对象是Visual VM内置的一个对象。
+使用它，可以更方便地来实现OQL。
+
+heap对象方法
+
+forEachClass: 对每一个Class对象执行一个回调操作。 类似于这样使用heap.forEachClass(callback)。
+findClass：查找给定类名称的类对象(类的Class对象？)，返回类的属性和方法heap.findClass(className)。
+classes: 返回堆中所有类的集合。heap.classes()。 
+objects：返回堆中所有对象的集合。 
+		 heap.objects(clazz, [includeSubTypes], [filter])。
+		 clazz是类名称, includeSubTypes指定是否选子类， filter指出筛选规则。
+livepaths: 返回指定对象的存活路径。即，显示那些对象直接或者间接引用了其他对象，heap.livepaths(obj)。 
+roots： 返回这个堆的根对象。 heap.roots()。 
+
+//查找java.util.Vector类
+select heap.findClass("java.util.Vector")
+//查找java.util.Vector父类
+select heap.findClass("java.util.Vector").superclasses()
+//查找字符串"56"的引用链
+select heap.livepaths(s) from java.lang.String s where s.toString() == '56'
+//查找堆中所有java.io.File对象实例
+select heap.objects("java.io.File", true)
+
