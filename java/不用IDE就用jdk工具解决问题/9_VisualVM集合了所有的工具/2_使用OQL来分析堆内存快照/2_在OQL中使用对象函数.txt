@@ -1,0 +1,43 @@
+类似于sql的集函数，在OQL中使用对象函数。
+
+classof()函数
+返回指定java对象的类，classof(obj)
+select classof(v) from instanceof java.util.Vector v
+
+objectid()函数
+返回对象的id
+select objectid(v) from java.util.Vector v
+
+reachables()函数
+返回对象的可达对象集合，reachables(obj, [filter])
+//返回"56"这个String对象的可达对象集合
+select reachables(s) from java.lang.String s where s.toString() == '56'
+结果是
+char[]#264
+这个返回结果是java.lang.String.value域的引用对象（？）
+
+referrers()函数 
+返回引用这个对象的对象集合，referrers(obj)。
+//返回引用"56"String对象的对象集合
+select referrers(s) from java.lang.String s where s.toString() == '56'
+
+referees()函数
+返回给定对象的直接引用对象的集合 
+//返回File对象的静态成员引用
+select referees(heap.findClass("java.io.File"))
+
+sizeof()函数
+返回指定对象的大小，不包括对象的引用对象。因此sizeof()的返回值由对象的类型决定的，与对象的具体内容无关。
+//返回int数组的大小以及对象
+select {size:sizeof(0), Object:o} from int[] o
+
+rsizeof()函数
+返回对象及其引用对象的大小总和。
+这个数值不仅与类本身的结构有关，还与对象的当前数据内容有关。
+//显示所有Vector对象的浅大小与深大小
+select {size:sizeof(o), rsize:rsizeof(o) } from java.util.Vector o
+
+toHtml()函数
+将对象转化为html显示
+//将Vector对象的输出使用HTML进行加粗和斜体显示
+select "<b><em>"+toHtml(o)+"</em></b>" from java.util.Vector o
