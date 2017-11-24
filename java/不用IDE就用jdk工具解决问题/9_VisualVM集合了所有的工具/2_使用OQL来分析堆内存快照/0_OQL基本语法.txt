@@ -1,0 +1,32 @@
+虽然Visual VM中有一部分的图形化堆内存快照分析的内容。
+但快照中的类十分庞大，为此VisualVM提供了对OQL（对象查询语言）的支持。
+
+OQL的基本语法
+select <javascript expression to select>
+from [instanceof] <class name> <identifier>
+where <javascript boolean expression to filter>
+
+select语句指定了查询结果要显示的内容。
+from语句指定了查询范围，可指定类名：java.lang.String、java.io.File
+where 用于指定查询条件
+
+select和where子句支持使用javascript语法处理较为复杂的查询逻辑。
+select语句可以使用类似json的语法输出多个列。
+from子句中可以使用instanceof关键字，将给定的子类也包括在输出列表中。
+
+#用QOL可以直接访问对象属性和部分方法#
+
+//查询String对象的count属性，筛选出长度大于等于100的字符串
+select s from java.lang.String s where s.count >= 100
+//选取长度大于等于256的数组
+select a from int[] a where a.length >= 256
+/* 筛选出包含两位数整数的字符串
+ * 其中select子句使用json语句，指定输出两列为String对象以及String.toString()的输出
+ * where子句使用正则表达式，指定了符合/^\d{2}$/条件的字符串*/
+select {instance: s, content: s.toString()} from java.lang.String s where /^\d{2}$/(s.toString())
+// 筛选出所有的文件路径及文件对象
+select {content: file.path.toString(), instance:file} from java.io.File file 
+//使用instanceof关键字来选取所有的ClassLoader，包括子类
+select cl from instanceof java.lang.ClassLoader cl
+
+ 
