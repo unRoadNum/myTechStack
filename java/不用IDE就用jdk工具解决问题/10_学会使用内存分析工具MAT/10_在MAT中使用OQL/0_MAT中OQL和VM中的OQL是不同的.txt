@@ -1,0 +1,49 @@
+#select子句#
+在MAT中，select子句的格式与sql基本一致，用于指定要显示的列。
+select子句中可以使用*，查看结果对象的引用实例(相当于 outgoing references)。
+
+select * from java.util.Vector v
+
+//显示String对象的长度以及内部数组
+select s.count, s.value from java.lang.String
+
+//支持自定义列名
+select v.elementData AS "Data Array" from java.util.Vector v
+
+//使用AS RETAINED SET关键字可以得到所得对象的保留集
+select AS RETAINED SET * from javatuning.ch6.toolscheck.shallowretained.Line 
+
+//使用OBJECTS关键字，可以返回结果集中的项以对象的形式显示
+select OBJECTS v.elementData from java.util.Vector v
+
+//使用DISTINCT关键字用于在结果集中去除重复对象
+select DISTINCT OBJECTS classof(s) from java.lang.String s 
+
+#from子句#
+from子句用于指定查询范围。它可以指定类名、正则表达式或者对象地址。
+
+//限定搜索范围
+//输出所有javatuning.ch6包下，所有类的实例
+select * from "javatuning\.ch6\..*"
+
+//直接使用类地址
+select * from 0x37a014d8
+
+//在From中使用INSTANCEOF关键字，返回指定类的所有子类实例
+select * from INSTANCEOF java.util.AbstractCollection
+
+//在From中使用OBJECTS关键字。在from子句中使用OBJECTS关键字，那么原本应该返回类的实例查询，将返回类的信息。
+select * from OBJECTS java.lang.String
+
+#where子句#
+where子句用于指定OQL的查询条件。
+
+//返回长度大于100的字符串
+select * from java.lang.String s where s.count >= 100
+
+//返回包含所有java字符串的字符串，使用LIKE操作符，LIKE操作符的操作参数为正则表达式
+select * from java.lang.String s where toString(s) like ".*java.*"
+
+//where子句支持and、or运算
+select * from java.lang.String s where s.offset>0 and s.count > 10
+

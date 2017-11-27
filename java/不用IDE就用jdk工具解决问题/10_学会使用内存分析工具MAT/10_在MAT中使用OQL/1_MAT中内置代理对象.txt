@@ -1,0 +1,50 @@
+MAT的OQL可以直接访问对象属性，如下:
+//使用String对象的count属性
+select * from java.lang.String s where s.count > 200
+//访问java.io.File对象的path属性
+select f.path.value from java.io.File f
+
+MAT为了能更快捷的获取堆内对象的额外属性（比如对象占用的堆大小、对象地址等），
+为每种元类型的堆内对象建立了相对应的代理对象，以增强原有对象的对象功能。
+
+访问代理对象的属性时，使用如下：
+//显示String对象中value数组的长度
+select s.value.@length, s from java.lang.String s where s.count > 100;
+//获取File对象的对象ID，对象地址，代理对象的类型，类的类型，对象的浅堆大小以及对象的显示名称。
+select f.@objectId, f.@objectAddress, f.@class, f.@clazz, f.@usedHeapSize, f.@displayName 
+from java.io.File f;
+//显示java.util.Vector内部数组的长度
+select v.elementData.@length from java.util.Vector v
+
+下面就是常见的代理对象的属性
+1. 基对象： 接口-IObject, 属性 objectId(对象ID)、objectAddress(对象地址)、class(代理对象类型)
+clazz(对象类型)、usedHeapSize(浅堆大小)、retainedHeapSize(深堆大小)和displayName(显示名称)。
+2. Class对象: 接口-IClass，属性 classLoaderId(ClassLoad的ID)。
+3. 数组： 接口IArray，属性 length(数组长度)。
+4. 元类型数组: 接口-IPrimitiveArray, 属性 valueArray(数组内容)。
+5. 对象数组： 接口-IObjectArray， 属性 referenceArray(数组内容，该数组中的成员为对象实例)
+
+除了使用代理对象，在OQL中，还可以使用代理对象的方法。
+
+//长度大于100的字符串内部char数组value中，索引为2的字符。
+select s.value.@valueArray.get(2) from java.lang.String s where (s.count > 100)
+//int数组中索引下标为2的对象
+select s.getValueAt(2) from int[] s where s.@length > 2
+//显示当前堆中，所有的类型
+select * from $(snapshot).getClasses()
+//显示所有的java.util.Vector对象及其子类型
+select * from $(snapshot).getClassesByName("java.util.Vector", true)
+
+下面就是代理对象的方法
+1. 对象类型${snapshot}
+	* 接口:ISnapshot
+	* 方法：
+		** getClasses(): 所有实例的集合
+		** getClassesByName(String name, boolean includeSubClasses): 根据名称选取符合条件的实例
+2. 类对象
+	* 接口：IClass
+	* 方法：
+		** hasSuperClass(): 是否有超类
+		** isArrayType(): 是否是数组
+3. 
+	
