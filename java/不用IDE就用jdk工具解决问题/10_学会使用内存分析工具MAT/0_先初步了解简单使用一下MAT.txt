@@ -1,0 +1,33 @@
+MAT
+MAT是Memory Analyzer的简称，它是一款强大的java堆内存分析工具。 
+可以用于查找内存泄露以及查看内存消耗情况。
+MAT是基于Eclipse开发的，一款免费的性能分析工具。
+
+如果要分析堆快照，就需要导出堆快照。
+jmap、JConsole和Visual VM等工具都可以用于获得java应用程序的堆快照文件。
+此外MAT本身也有这个功能。
+
+选择File菜单下的Accquire Heap Dump命令。之后，会弹出当前java应用程序列表，
+选择要分析的应用程序即可。
+
+打开堆快照文件，出现的MAT分析界面。
+
+右侧：
+显示了堆快照文件的大小、类、实例和ClassLoader的总数。
+在右侧的饼图中，显示了当前堆快照中，最大的对象。
+将鼠标悬停在饼图中，可以在左侧的Inspector界面中，查看该对象的相关信息。
+在饼图中单击，可以对选中的对象进行更多的操作。
+
+柱状图：
+单击工具栏中的柱状图按钮，可以查看当前堆的类信息。
+包括类的对象数量、浅堆(Shallow)大小和深堆(Retained)大小。
+通过柱状图界面，可以查找引用选中对象的对象集合以及选中对象所引用的对象集合。
+
+例如，选中java.util.Vector对象，在右键菜单中选择List objects。 
+弹出的with outgoing references和with incoming references命令分别表示查找java.util.Vector实例的引用
+对象，以及引用java.util.Vector实例的对象。
+
+为了方便，查看柱状图还提供了根据ClassLoader和包对类进行排序。
+
+
+

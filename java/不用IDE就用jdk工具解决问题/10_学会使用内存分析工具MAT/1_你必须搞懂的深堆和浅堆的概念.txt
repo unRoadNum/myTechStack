@@ -1,0 +1,93 @@
+浅堆(Shallow Heap)和深堆(Retained Heap)是两个非常重要的概念。
+它们分别表示一个对象结构所占用的内存大小和一个对象被GC回收后，可以真实释放的内存大小。
+
+#浅堆(Shallow Heap)#
+指一个对象所消耗的内存。
+在32位系统中，一个对象引用会占用4个字节。
+一个int类型会占用4个字节，long型变量会占用8个字节，每个对象头需要占用8个字节。
+
+根据堆快照格式不同，对象的大小可能会向8个字节对齐。
+
+以String对象为例，String对象的几个属性：
+String
++ -- value:char[]
++ -- offset: int
++ -- count: int
++ -- hash: int
+3个int类型以及一个引用类型合计占用内存：3*4+4=16个字节，再加上对象头的8个字节。
+因此String对象占用的空间，也就是浅堆的大小是16+8=24字节。
+浅堆的大小只与对象的结构有关，与对象的实例内容无关。
+也就是说，无论字符串的长度是多少，内容是多少，浅堆的大小始终是24个字节。
+
+#深堆(Retained Heap)#
+深堆的概念更为复杂一些。要理解深堆，首先需要了解保留集(Retained Set)。
+
+对象A的保留集指对象A被垃圾回收后，可以被释放的所有的对象集合（包括对象A本身）。
+即对象A的保留集可以被认为是只能通过对象A被直接或间接访问到的所有对象的集合。
+通俗的说，就是仅被对象A所持有的对象集合。
+
+而深堆就是对象的保留集中所有对象的浅堆大小之和。
+
+```
+//表示点的定义
+public class Point {
+	private int x;
+	private int y;
+	public Point(int x, int y) {
+		super();
+		this.x = x;
+		this.y = y;
+	}
+	//省略setter getter
+}
+//表示线的定义
+public class Line {
+	private Point startPoint;		//线由两个点组成
+	private Point endPoint;
+	
+	public Line(Point startPoint , Point endPoint) {
+		super();
+		this.startPoint = startPoint;
+		this.endPoint = endPoint;
+	}
+	//省略setter getter
+}
+public class ShallowRetainedHeap {
+	public static void main(String[] args) throws InterruptedException {
+		
+		Point a = new Point(0, 0);
+		Point b = new Point(1, 1);
+		Point c = new Point(5, 3);
+		Point d = new Point(9, 8);
+		Point e = new Point(6, 7);
+		Point f = new Point(3, 9);
+		Point g = new Point(4, 8);
+		
+		Line aLine = new Line(a, b);
+		Line bLine = new Line(a, c);
+		Line cLine = new Line(d, e);
+		Line dLine = new Line(f, g);
+		
+		a = null; //释放部分点
+		b = null;
+		c = null;
+		d = null;
+		e = null;
+		Thread.sleep(1000000);
+	}
+}
+```
+根据Point类实例的浅堆大小为4*2+8=16字节，一个Line实例的浅堆大小为4*2+8=16字节。
+使用MAT得到该实例的内存快照文件。
+可以看到，所有的Point实例浅堆和深堆的大小都是16个字节。
+而dLine对象，浅堆为16个字节，深堆也是16个字节，这是因为dLine对象内的两个点f和g都没有被设置为null。
+因此，即使dLine被释放，f和g也不会被释放。
+对象cLine内的引用对象d和e由于仅在cLine内存在引用，因此只要把cLine释放，d和e也必然被垃圾回收。
+即d和e在cLine的保留集内，因此cLine的深堆为16*2+16=48字节。
+对于aLine和bLine对象，由于两者均持有对方的一个点，因此，当aLine被回收时，公共点a和bLine中依然有引用存在，
+故不会被回收，点a不在aLine对象的保留集中，因此aLine的深堆大小为16+16=32个字节。
+对象bLine与aLine完全一致。
+
+#在MAT中查看对象的保留集#
+在MAT中，无论是柱状图中，还是对象列表中，选中对象，单击右键，在弹出的菜单中都有Show Retained Set命令，
+它可以用于显示指定类或者对象的保留集。

@@ -1,0 +1,3 @@
+在堆快照中，还包括着当前的线程信息，通过MAT可以查看这些信息。
+通过Thread Details、Thread Overview和Thread Stacks3个菜单命令，可以查看线程详情。
+
