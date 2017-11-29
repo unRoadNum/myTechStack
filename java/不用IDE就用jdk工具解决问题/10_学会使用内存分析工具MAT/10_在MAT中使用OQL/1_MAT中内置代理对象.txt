@@ -17,12 +17,21 @@ from java.io.File f;
 select v.elementData.@length from java.util.Vector v
 
 下面就是常见的代理对象的属性
-1. 基对象： 接口-IObject, 属性 objectId(对象ID)、objectAddress(对象地址)、class(代理对象类型)
-clazz(对象类型)、usedHeapSize(浅堆大小)、retainedHeapSize(深堆大小)和displayName(显示名称)。
-2. Class对象: 接口-IClass，属性 classLoaderId(ClassLoad的ID)。
-3. 数组： 接口IArray，属性 length(数组长度)。
-4. 元类型数组: 接口-IPrimitiveArray, 属性 valueArray(数组内容)。
-5. 对象数组： 接口-IObjectArray， 属性 referenceArray(数组内容，该数组中的成员为对象实例)
+1. 基对象：
+	* 接口:IObject
+	* 属性 objectId(对象ID)、objectAddress(对象地址)、class(代理对象类型)、clazz(对象类型)、usedHeapSize(浅堆大小)、retainedHeapSize(深堆大小)和displayName(显示名称)
+2. Class对象: 
+	* 接口:IClass
+	* 属性:classLoaderId(ClassLoad的ID)
+3. 数组： 
+	* 接口:IArray
+	* 属性:length(数组长度)
+4. 元类型数组: 
+	* 接口:IPrimitiveArray
+	* 属性:valueArray(数组内容)
+5. 对象数组： 
+	* 接口:IObjectArray
+	* 属性:referenceArray(数组内容，该数组中的成员为对象实例)
 
 除了使用代理对象，在OQL中，还可以使用代理对象的方法。
 
@@ -46,5 +55,28 @@ select * from $(snapshot).getClassesByName("java.util.Vector", true)
 	* 方法：
 		** hasSuperClass(): 是否有超类
 		** isArrayType(): 是否是数组
-3. 
+3. 基对象：
+	* 接口：IObject
+	* 方法：
+		** getObjectAddress():	取得对象地址
+4. 元类型数组：
+	* 接口：IPrimitiveArray
+	* 方法：	
+		** getValueAt(int index): 取得数组中给定索引的数据
+5. java元类型数组，对象数组或者对象列表
+	* 接口：{} or List
+	* 方法：
+		** get(int index): 取得数组或者列表中给定索引的数据
+
+MAT中的OQL还内置了一些有用的函数:
+toHex(number): 转为16进制		inbounds(object): 取得引用给定对象的对象
+toString(object): 转为字符串  	classof(object): 取得当前对象的类
+dominators(object): 取得直接支配对象	dominatorof(object):	取得给定对象的直接支配者
+outbounds(object): 取得给定对象引用的对象
+
+//显示所有长度15的字符串内容
+select toString(s) from java.lang.String s where ((s.count = 15) and (s.value != null))
+
+ 
+
 	
