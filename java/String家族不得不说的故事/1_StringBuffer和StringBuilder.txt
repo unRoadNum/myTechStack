@@ -1,0 +1,21 @@
+String是一个不变模式类。
+
+当我们要做字符串拼接的时候，就不能用String对象了。
+String对象只要建立了就不会发生变化了，所以就出现了StringBuffer类。
+
+StringBuffer类出现的时候，还没有StringBuilder类。
+sun公司的人不知道怎么想的，就将StringBuffer类实现成线程安全的。
+然后过去了10年了，人们终于意识到这是个多么愚蠢的决定：
+实际应用场景中根本用不到一个线程安全String拼接器。
+而且为了线程安全，StringBuffer类牺牲了效率。
+
+sun决定在jdk1.5改变这个问题，提供了一个非线程安全的StringBuilder类。
+然后javac也从这个时候将所有加号连接的String运算都隐式的改成了StringBuilder。
+
+但是需要注意的是如果String字符由+号连接出现在循环里，就有性能损失了。
+因为当你重复的使用加法拼接字符串的时候，编译器会重复的new StringBuilder对象并
+append完成字符串拼接，为了保证数据返回的一致性还要重复调用toString()方法，直接用
+StringBuilder不会有这些额外开销，只会有一个StringBuilder对象被创建，不会调用toString()方法。
+
+所以养成良好的习惯，使用StringBuidler，不要偷懒使用String相加。
+
