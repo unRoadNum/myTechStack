@@ -1,0 +1,22 @@
+JProfile是一款优秀的商业软件。
+主要功能有内存分析、快照分析、CPU分析、线程分析和JVM性能信息收集。
+
+这种东西也不是讨论它实现的原理，就是一波操作。
+
+#先连接你的java程序#
+
+就学习一种连接方式，remote连接。
+
+你要连接的java程序必须在jvm启动参数加上配置信息：
+-agentpath:%jprofile%\bin\windows\jprofilerti.dll=port=25000
+
+打开JProflie工具界面中，使用菜单Session->New Session， 连接方式选择remote。
+设置正确的连接地址和端口号(与应用程序jvm参数中配置的端口号一致即可)。
+
+单击ok，将成功连接的你的jvm程序。
+JProfile允许在正式监控应用程序前，选择是否立即启用cpu监控等高级性能工具。
+当然，这些功能也可以在正式连接应用程序后启用。
+当JProfile连接java程序成功后，被挂起的java程序将会继续执行。
+
+
+
