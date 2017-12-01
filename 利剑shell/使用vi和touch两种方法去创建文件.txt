@@ -1,0 +1,3 @@
+#创建文件#
+vi dst_file(s)
+touch dst_file(s)
