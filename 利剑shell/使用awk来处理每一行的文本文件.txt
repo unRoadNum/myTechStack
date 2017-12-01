@@ -1,0 +1,35 @@
+## awk
+
+写在前面的话： unix始终认为，一行shell胜过千行c程序
+
+#用途#
+使用awk进行对每一行文本进行处理。
+它允许您创建足够简短的程序，这些程序读取输入文件、为数据排序、处理数据、对数据执行计算以及生成报表，还有无数其他功能。
+
+#基本语法#
+awk 'BEGIN { print "start"} pattern { print} END { print "end"}' file
+
+#注解#
+1. BEGIN和END语句块都可以省略
+2. pattern省略后，默认为对每一行处理，且默认处理语句为{ print }， 也就是说上述就算不写print也一样
+	
+#惯用法#
+1. 在命令行中通常这样用：awk [-F field-separator] 'commands' input-file(s)
+其中commands是对每一个行文本执行的命令，[-F field-separator]是可选的，表示指定域分隔符，如果不指定默认是空格。
+input-file(s)指定待处理的文本文件名称。
+```
+cat /etc/passwd | awk -F ':' '{print $1}'
+root
+daemon
+bin
+sys
+```
+awk的工作流程： 读入有'\n'换行符分隔的一条记录，然后将记录按指定的域分隔符划分域。
+填充域，$0表示所有域，$1表示第一个域, $n表示第n个域
+2. shell脚本方式： 如果shell脚本全是awk命令，可以将shell脚本首行的：#!/bin/sh修改成#!/bin/awk
+3. 对目标文本文件执行一堆的awk命令，这样用：awk -f awk-script-file input-file(s)
+将一堆的awk命令写在awk-script-file中，用-f选项去指定，然后对目标input-file去执行。
+
+
+
+
