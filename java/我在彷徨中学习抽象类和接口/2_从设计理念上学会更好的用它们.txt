@@ -1,0 +1,112 @@
+从设计理念层面看abstract class和interface 
+
+上面主要从语法定义和编程的角度论述了abstract class和interface的区别，这些层面的区别是比较低层次的、非本质的。
+本小节将从另一个层面：abstract class和interface所反映出的设计理念，来分析一下二者的区别。
+作者认为，从这个层面进行分析才能理解二者概念的本质所在。 
+
+前面已经提到过，abstarct class在Java语言中体现了一种继承关系，要想使得继承关系合理，父类和派生类之间必须存在"is a"关系，
+即父类和派生类在概念本质上应该是相同的。
+对于interface 来说则不然，并不要求interface的实现者和interface定义在概念本质上是一致的，仅仅是实现了interface定义的契约而已。
+为了使论述便于理解，下面将通过一个简单的实例进行说明。 
+
+考虑这样一个例子，假设在我们的问题领域中有一个关于Door的抽象概念，该Door具有执行两个动作open和close。
+此时我们可以通过abstract class或者interface来定义一个表示该抽象概念的类型，定义方式分别如下所示： 
+
+使用abstract class方式定义Door： 
+```
+abstract class Door { 
+	abstract void open(); 
+	abstract void close()； 
+} 
+```
+使用interface方式定义Door： 
+```
+interface Door { 
+	void open(); 
+	void close(); 
+} 
+```
+
+其他具体的Door类型可以extends使用abstract class方式定义的Door或者implements使用interface方式定义的Door。
+看起来好像使用abstract class和interface没有大的区别。 
+
+如果现在要求Door还要具有报警的功能。
+我们该如何设计针对该例子的类结构呢?下面将罗列出可能的解决方案，并从设计理念层面对这些不同的方案进行分析。 
+
+#解决方案一# 
+简单的在Door的定义中增加一个alarm方法，如下： 
+```
+abstract class Door { 
+	abstract void open(); 
+	abstract void close()； 
+	abstract void alarm(); 
+} 
+```
+或者 
+```
+interface Door { 
+	void open(); 
+	void close(); 
+	void alarm(); 
+} 
+```
+
+那么具有报警功能的AlarmDoor的定义方式如下： 
+```
+class AlarmDoor extends Door { 
+	void open() { … } 
+	void close() { … } 
+	void alarm() { … } 
+} 
+```
+或者 
+```
+class AlarmDoor implements Door {
+	void open() { … } 
+	void close() { … } 
+	void alarm() { … } 
+}
+```
+这种方法违反了面向对象设计中的一个核心原则ISP（Interface Segregation Priciple），在Door的定义中把Door概念本身固有的行为方法和另外一个概念"报警器"的行为方法混在了一起。
+这样引起的一个问题是那些仅仅依赖于Door这个概念的模块会因为"报警器"这个概念的改变（比如：修改alarm方法的参数）而改变，反之依然。 
+
+#解决方案二#
+既然open、close和alarm属于两个不同的概念，根据ISP原则应该把它们分别定义在代表这两个概念的抽象类中。
+定义方式有：
+1. 这两个概念都使用abstract class方式定义; 
+2. 两个概念都使用interface方式定义；
+3. 一个概念使用abstract class方式定义，另一个概念使用interface方式定义。 
+
+显然，由于Java语言不支持多重继承，所以两个概念都使用abstract class方式定义是不可行的。
+后面两种方式都是可行的，但是对于它们的选择却反映出对于问题领域中的概念本质的理解、对于设计意图的反映是否正确、合理。
+我们一一来分析、说明。 
+
+如果两个概念都使用interface方式来定义，那么就反映出两个问题：
+1. 我们可能没有理解清楚问题领域，AlarmDoor在概念本质上到底是Door还是报警器？
+2. 如果我们对于问题领域的理解没有问题。 
+比如：我们通过对于问题领域的分析发现AlarmDoor在概念本质上和Door是一致的，那么我们在实现时就没有能够正确的揭示我们的设计意图，因为在这两个概念的定义上（均使用interface方式定义）反映不出上述含义。 
+
+如果我们对于问题领域的理解是：AlarmDoor在概念本质上是Door，同时它有具有报警的功能。
+我们该如何来设计、实现来明确的反映出我们的意思呢？
+前面已经说过，abstract class在Java语言中表示一种继承关系，而继承关系在本质上是"is a"关系。
+所以对于Door这个概念，我们应该使用abstarct class方式来定义。
+另外，AlarmDoor又具有报警功能，说明它又能够完成报警概念中定义的行为，所以报警概念可以通过interface方式定义。
+如下所示： 
+```
+abstract class Door { 
+	abstract void open(); 
+	abstract void close()； 
+} 
+interface Alarm { 
+	void alarm(); 
+} 
+class AlarmDoor extends Door implements Alarm { 
+	void open() { … } 
+	void close() { … } 
+	void alarm() { … } 
+} 
+```
+
+这种实现方式基本上能够明确的反映出我们对于问题领域的理解，正确的揭示我们的设计意图。
+其实abstract class表示的是"is a"关系，interface表示的是"like a"关系。 
+大家在选择时可以作为一个依据，当然这是建立在对问题领域的理解上的，比如：如果我们认为AlarmDoor在概念本质上是报警器，同时又具有Door的功能，那么上述的定义方式就要反过来了。
