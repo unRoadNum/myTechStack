@@ -1,0 +1,17 @@
+## find和grep
+
+快速找到log文件，比如log文件名为runlog.txt。
+
+第一步，使用find命令
+find是搜索文件，grep是搜索文本内容。
+
+#find惯用法#
+find / -name "runlog.log"
+在根目录下查找runlog.log文件
+
+第二步，使用grep命令
+在第一步查找到runlog中查找error关键字
+
+#grep惯用法#
+cat -n runlog.txt | grep "error"
+
