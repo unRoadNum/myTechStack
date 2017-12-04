@@ -1,0 +1,32 @@
+线程栈是线程的一块私有空间。
+在jvm中，可以使用-Xss参数设置线程栈的大小。
+
+在线程中进行局部变量分配，函数调用时，都需要在栈中开辟空间。
+如果栈的空间分配太小，那么线程在运行时，可能没有足够的空间分配局部变量或者达不到足够的函数调用深度，导致程序异常退出。
+如果栈空间太大，那么开设线程所需的内存成本就会上升，系统所能支持的线程总数都会下降。
+
+```
+public class TestXss {
+	public static class MyThread extends Thread {
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(10000); //确保线程不退出
+			} catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void main(String args[]) {
+		int i = 0;
+		try {
+			for(i=0; i<10000; i++) {
+				new MyThread().start();			//开启大量新线程
+			}
+		} catch(OutOfMemoryError e) {
+			System.out.println("count thread is " + i);
+		}
+	}
+}
+```

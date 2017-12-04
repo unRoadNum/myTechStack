@@ -1,0 +1,11 @@
+持久代(方法区)不属于堆的一部分。
+在Hot Spot虚拟机中，使用-XX:MaxPermSize可以设置持久代的最大值，使用-XX:PermSize可以设置持久带的初始大小。
+
+持久代的大小直接决定了系统可以支持多少个类定义和多少常量。
+对于使用CGLIB或者javassist等动态字节码生成工具的应用程序而言，设置合理的持久代大小有助于维持系统稳定。
+
+java -XX:PermSize=4M XX:MaxPermSize=4M
+
+一般来说，MaxPermSize设置为64MB已经满足绝大部分应用程序正常工作。
+如果依然出现永久区溢出，可以将MaxPermSize设置为128MB。
+这是两个很常用的永久区取值。

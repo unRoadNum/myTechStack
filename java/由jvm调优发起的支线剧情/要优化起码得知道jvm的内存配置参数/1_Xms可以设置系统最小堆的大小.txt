@@ -1,0 +1,28 @@
+使用jvm参数-Xms可以用于设置系统的最小堆空间。
+也就是jvm启动时，所占据的操作系统内存大小。
+
+当-Xms指定的内存大小确实无法满足应用程序时，jvm才会向操作系统申请更多的内存，直到内存大小达到-Xmx指定的最大内存为止。
+如果超过-Xmx的值，则抛出OutOfMemoryError异常。
+
+如果-Xms的数值较少，那么jvm为了保证系统尽可能地在指定范围内运行，就会更加频繁的进行GC操作，以释放失效的内存空间。
+从而，会增加Minor GC和Full GC的次数，对系统性能产生一定的影响。
+
+#Minor GC#
+当年轻代满时就会触发Minor GC，这里的年轻代满指的是Eden代满，Survivor满不会引发GC。
+#Full GC#
+当老年代满时会引发Full GC，Full GC将会同时回收年轻代、老年代。
+
+```
+public static void main(String[] args) {
+	Vector v = new Vector();
+	for(int i = 1; i <= 10; i++) {
+		byte[] b = new byte[1024*1024];
+		v.add(b);
+		if(v.size() == 3) //清空内存
+			v.clear();
+	}
+}
+```
+java -Xmx11M -Xms4M -verbose:gc
+
+

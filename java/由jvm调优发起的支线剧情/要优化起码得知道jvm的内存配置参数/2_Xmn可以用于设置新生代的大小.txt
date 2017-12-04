@@ -1,0 +1,17 @@
+参数-Xmn用于设置新生代的大小。
+设置一个较大的新生代会减少老年代的大小，这个参数对系统性能以及GC行为有很大的影响。
+
+新生代的大小一般设置为整个堆空间的1/4到1/3左右。
+
+java -Xmx11M-Xms11M-Xmn2M-XX:+PrintGCDetails
+
+将新生代的大小减少为2MB，那么Minor GC次数将从4次数增加到9次。
+
+在Hot Spot虚拟机中： 
+-XX:NewSize用于设置新生代的初始大小。
+-XX:MaxNewSize用于设置新生代的最大值。
+
+通常情况下，只设置-Xmn已经满足绝大部分应用的需要。
+设置-Xmn的效果等同于设置相同的-XX:NewSize和-XX:MaxNewSize。
+
+若设置不同的-XX:NewSize和-XX:MaxNewSize可能会导致内存震荡，从而产生不必要的系统开销。
