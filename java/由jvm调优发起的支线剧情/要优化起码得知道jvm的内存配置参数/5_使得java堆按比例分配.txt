@@ -1,0 +1,15 @@
+对于新生代大小的设置，可以通过-Xmn、-XX:NewSize和-XX:MaxNewSize等三个参数。
+它们可以设定一个固定大小的新生代空间。
+
+事实上，在实际生产环境中，更希望能够对堆空间进行比例分配。
+
+参数-XX:SurvivorRatio用来设置新生代中，eden空间和from空间的比例关系。
+s0和s1空间分别称为from空间和to空间。
+它们的大小是相同的，职能也是相同的。
+在Minor GC后，from和to互换角色。
+
+-XX:SurvivorRatio=eden/so/s1
+使用-XX:+PrintGCDetails -Xmn10M -XX:SurvivorRatio=8运行一段简单的java程序看一看。
+
+参数-XX:NewRatio可以用来设置新生代和老年代的比例，即-XX:NewRatio=老年代/新生代
+使用-XX:+PrintGCDetails -XX:NewRatio=2 -Xmx20M -Xms20M
