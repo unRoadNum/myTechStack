@@ -1,0 +1,22 @@
+由于Full GC的成本要远远高于Minor GC，因此尽可能将对象分配在新生代是一项明智的做法。
+
+虽然在大部分情况下，jvm会尝试在eden区分配对象。
+由于空间紧张等问题，很可能不得不将部分年轻对象提前向老年代压缩。
+
+通过设置一个较大的新生代预留新对象，设置合理的survivor区并提高survivor区的使用率，可以将年轻对象保存在新生代。
+一般来说，当survivor区的空间不够，或者占用量达到50%时，就会将对象进入老年代(不管对象的年龄有多大)。
+
+-XX: +PrintGCDetails -Xmx20M -Xms20M -Xmn6M
+分配最大堆(新+老)为20M，最小堆(jvm启动)为20M，新生代为6M
+
+//-XX:SurvivorRatio=eden/so/s1
+-XX:+PrintGCDetails -Xmx20M -Xms20M -Xmn10M -XX:SurvivorRatio=8
+
+可以增大from区或者增加from的利用率。
+使用这两种办法，可以将对象等多的保存在新生代。
+
+//1. 通过参数-XX:TargetSurvivorRatio提高from区的利用率，使from区使用率到90%时，再讲对象送入老年代
+-XX:+PrintGCDetails -Xmx20M -Xms20M -Xmn10M -XX:SurvivorRatio=8 -XX:Target-SurvivorRatio=90
+
+//2. 通过-XX:SurvivorRatio，设置一个更大的from区，将对象留在新生代
+-XX:+PrintGCDetails -Xmx20M -Xms20M -Xmn10M -XX:SurvivorRatio=2
