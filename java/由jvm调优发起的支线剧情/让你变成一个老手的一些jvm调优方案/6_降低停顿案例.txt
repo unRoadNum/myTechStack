@@ -1,0 +1,21 @@
+为降低应用软件在垃圾回收时的停顿： 
+首先，考虑的是使用关注系统停顿的CMS回收器;
+其次，为了减少Full GC次数，应尽可能将对象预留在新生代，因为新生代Minor GC的成本远远小于老年代的Full GC。
+
+java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20
+-XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:SurvivorRatio=8 -XX:TargetSurvivorRatio=90
+-XX:MaxTenuringThreshold=31
+
+-XX:ParallelGCThreads: 设置20个线程进行垃圾回收
+-XX:+UseParNewGC: 新生代使用并行回收器
+-XX:+UseConcMarkSweepGC: 老年代使用CMS收集器降低停顿
+-XX:SurvivorRatio: 设置eden区和survivor区的比例为8:1。
+稍大的survivor空间可以提高在新生代回收生命周期较短的对象的可能性（如果survivor不够大，一些短命的对象可能直接进入老年代，这对系统是不利的）。
+-XX:TargetSurvivorRatio: 
+设置survivor区的可使用率。
+这里设置为90%，则允许90%的survivor空间被使用。默认值是50%，故该设置提高了survivor区的使用率。
+当存放在对象超过这个百分比，则对象回向老年代压缩。
+因此，这个选项更有助于将对象留在新生代。
+-XX:MaxTenuringThreshold:
+设置年轻对象晋升到老年代的年龄。默认值是15次，也就是说对象经过15次Minor GC依然存活，则进入老年代。
+这里设置为31，即尽可能地将对象保存在新生代。
