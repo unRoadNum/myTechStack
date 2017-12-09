@@ -1,0 +1,6 @@
+在Solaris系统中，jvm可以支持大页的使用。
+使用大的内存分页可以增强CPU的内存寻址能力，从而提升系统的性能。
+
+java -Xmx2506m -Xms2506m -Xmn1536m -Xss128k -XX:+UseParallelGC -XX:ParallelGCThreads=20 -XX:+UseParallelOldGC -XX:LargePageSizeInBytes=256m
+
+-XX:LargePageSizeInBytes: 设置大页的大小。
