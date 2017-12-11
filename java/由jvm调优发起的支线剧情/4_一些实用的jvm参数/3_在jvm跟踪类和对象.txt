@@ -1,0 +1,11 @@
+#类和对象跟踪#
+
+jvm提供了一组参数用于获取系统运行时加载、卸载类的信息。
+
+-XX:+TraceClassLoading参数用于跟踪类加载情况。
+-XX:+TraceClassUnLoading用于跟踪类卸载情况。
+
+如果同时打开这两个开关，也可是使用-verbose:class参数。
+
+除了类的跟踪，jvm还提供了-XX:+PrintClassHistogram开关用于打印运行时实例的信息。
+当此开关被打开时，按下ctrl+Break被按下，会显示系统内类的统计信息。

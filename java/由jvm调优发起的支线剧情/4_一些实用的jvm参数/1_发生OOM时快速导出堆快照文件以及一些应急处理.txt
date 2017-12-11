@@ -1,0 +1,13 @@
+#发生OOM时快速导出堆快照文件#
+
+使用-XX:+HeapDumpOnOutOfMemoryError参数在程序发生OOM时，导出应用程序当前的堆快照。
+这是非常有用的一种方法，因为当程序发送OOM退出系统时，一些瞬时信息都随着程序的终止而消息。
+而重现OOM问题比较困难或者耗时。
+
+//参数-XX:HeapDumpPath可以指定堆快照的保存位置
+-Xmx10M -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=C:\m.hprof
+
+#当发送OOM错误时，可以运行一些第三方的脚本#
+-XX: OnOutOfMemoryError=c:\reset.bat
+
+

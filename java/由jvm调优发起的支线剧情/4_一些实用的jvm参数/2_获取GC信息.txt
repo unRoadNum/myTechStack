@@ -1,0 +1,13 @@
+#获取GC信息#
+
+取得gc信息是java应用程序调优的重要一环，jvm虚拟机也提供了很多参数帮助开发人员获取gc信息。
+
+1. 获取一段简要的gc信息，可以使用-verbose:gc或者+XX:+PrintGC
+2. 如果要获取更加详细的信息，可以使用-XX:+PrintGCDetails
+3. 如果需要在GC发生的时刻打印GC发生的时间，则可以追加使用-XX:+PrintGCTimeStamps选项
+4. 如果需要查看新生对象晋升老年代的实际阈值，可以使用参数-XX:+PrintTenuringDistribution查看
+例如，-XX:+PrintTenuringDistrubution -XX:MaxTenuringThreshold=18（设置最大阈值为18，打印实际阈值）
+5. 如果需要查看GC与应用程序相互执行的耗时，可以使用-XX:+PrintApplication-StoppedTime和-XX:+PrintGCApplicationConcurrentTime参数。
+它们将分别显示应用程序在GC发生停顿时间和应用程序在GC停顿期间的执行时间。
+6. 为了能够将以上的输出信息保存在文件中，可以使用-Xloggc参数指定GC日志的输出位置，
+例如: -Xloggc:C:\gc.log

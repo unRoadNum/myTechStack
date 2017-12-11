@@ -1,0 +1,15 @@
+#JIT#
+
+JVM的JIT(just-in-time)编译器，可以在运行时将字节码编译成本地代码，从而提高函数的执行效率。
+
+-XX:CompileThreshold为JIT编译的阈值;
+当函数的调用次数超过-XX:CompileThreshold时，JIT就将字节码编译成本地机器码。
+
+在client模式下，-XX:CompileThreshold的取值是1500；
+在server模式下，取值是10000；
+
+JIT编译完成后，JVM便会用本地代码代替原来的字节码解释执行。 
+因此，在系统未来的运行中，这些时间都是可以被赚回来的。
+
+//-XX:+CITime打印出JIT编译的耗时，-XX:+PrintCompilation打印出JIT编译的信息
+java -XX:CompileThreshold=1500 -XX:+PrintComiplation -XX:+CITime

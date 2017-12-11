@@ -1,0 +1,4 @@
+在Solaris下，jvm提供了几个用于线程控制的开关：
+-XX:+UseBoundThreads： 绑定所有用户线程到内核线程，减少线程进入饥饿状态的次数。
+-XX:+UseLWPSynchronization: 使用内核线程替换线程同步
+-XX:+UseVMInterruptibleIO: 允许运行时中断线程
