@@ -1,0 +1,67 @@
+jdk中内置的future模式的入口点是FutureTask类。
+
+#FutureTask类结构#
+1. class RunnableFuture implements Runnalbe extends Future;
+2. class FutureTask extends RunnableFuture;
+3. FutureTask 包含内部类Sync;
+4. 内部类Sync调用了Callable接口;
+
+#在FutureTask的run()方法中通过内部类Sync调用Callable接口#
+Callable接口是留给用户实现"Data、FutureData和RealData"的。
+
+Callable接口是一个用户自定义的实现。
+在应用程序中，通过实现Callable接口的call()方法，指定FutureTask的实际工作内容和返回对象。
+
+jdk内置的future模式功能强大。
+除了基本功能以外，还可以取消future任务，或者设置future任务的超时时间。
+这些线程的控制功能，都可以通过Future类方法来操作。
+#Future类方法#
+boolean cancel(boolean mayInterruptIfRunning);		//取消任务
+boolean isCanceled();		//是否已经取消
+boolean isDone();		//是否已经完成
+V get() throws InterruptedException, ExecutionException;		//取得返回对象
+V get(long timeout, TimeUnit unit);		//取得返回对象，可以设置超时时间
+
+#简单的一个使用举例#
+```
+public class RealData implements Callable<String> {
+	private String para;
+	public RealData(String para) {
+		this.para = para;
+	}
+	@Override
+	public String call() throw Exception {
+		//这里是真实的业务逻辑，其执行可能很慢
+		StringBuffer sb = new StringBuffer();
+		for(int i=0; i < 10; i++) {
+			sb.append(para);
+			try {
+				Thread.sleep(100);
+			}catch(InterruptedException e) {
+			}
+		}
+		return sb.toString();
+	}
+}
+
+public class Main {
+	public static void main(String[] args) throws InterruptedException, ExecutionException{
+		//构造FutureTask
+		FutureTask<String> future = new FutureTask<String>(new RealData("a"));
+		ExecutorService executor = Executors.newFixedThreadPool(1);
+		//执行FutureTask，相当于"1_简单实现future模式"中的client.request("a")发送请求
+		//在这里对应的是开启线程进行RealData的call执行
+		executor.submit(future);
+		System.out.println("请求完毕");
+		try {
+			//这里依然可以做额外的数据操作，使用sleep代替其他业务逻辑的处理
+			Thread.sleep(2000);
+		}catch(InterruptedException e){
+		}
+		//相当于上例中的data.getResult(),取得call()方法的返回值
+		//如果此时call()方法没有执行完成，则依然会等待
+		System.out.println("数据 = " + future.get());
+	}
+}
+```
+ 
