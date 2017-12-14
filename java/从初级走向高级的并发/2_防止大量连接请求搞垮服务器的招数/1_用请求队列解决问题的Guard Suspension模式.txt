@@ -1,0 +1,101 @@
+#Guard Suspension模式#
+
+角色:
+1. Request对象：封装客户端的请求
+2. Request队列：表示客户端请求队列
+3. ClientThread:	客户端进程
+4. ServerThread:	服务端进程
+
+其中Request队列是由ClientThread和ServerThread共同维护的。
+
+实现如下：
+```
+/* POJO对象：实际上就是普通的JavaBeans，其中有一些属性和getter、setter方法的类，没有业务逻辑
+ * Request类就是一个POJO对象*/
+public class Request {
+	private String name;
+	public Request(String name) { //模拟请求内容
+		this.name = name;
+	}
+	public String getName() {
+		return name;
+	}
+	public String toString() {
+		return "[ Request " + name + " ]";
+	}
+}
+
+//RequestQueue对象作为Request的集合，维护系统的Request请求列表
+public class RequestQueue {
+	private LinkedList queue = new LinkedList();
+	
+	public synchronized Request getRequest() {
+		while(queue.size() == 0) {
+			try {
+				wait();	//等待直到有新的request加入
+			} catch(InterrruptedException e) {
+			}
+		}
+		return (Request)queue.remove();		//返回request队列中的第一个请求
+	}
+	
+	public synchronized void addRequest(Request request) {
+		queue.add(request);		//加入新的request请求
+		notifyAll();		//通知getRequest方法
+	}
+}
+
+//服务端进程，用于处理用户的请求操作
+public class ServerThread extend Thread {
+	private RequestQueue requestQueue;		//请求队列
+	public ServerThread(RequestQueue requestQueue, String name) {
+		super(name);
+		this.requestQueue = requestQueue;
+	}
+	public void run() {
+		while(true) {
+			final Request request = requestQueue.getRequest();	//得到请求
+			try {
+				Thread.sleep(100);		//模拟请求处理耗时
+			}catch(InterrruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println(Thread.currentThread().getName() + " handles " + request);
+		}
+	}
+}
+
+//客户端进程
+public class ClientThread extends Thread {
+	private RequestQueue requestQueue;  //请求队列
+	public ClientThread(RequestQueue requestQueue, String name) {
+		super(name);
+		this.requestQueue = requestQueue;
+	}
+	public void run() {
+		for(int i=0; i < 10; i++) {	//构造请求
+			Request request = new Request("RequestID:" + i + "Thread_Name:" + Thread.currentThread().getName());
+			System.out.println(Thread.currentThread().getName() + "requests " + request);
+			request.addRequest(request); //提交请求
+			try {
+				Thread.sleep(10); 		//客户端请求的速度快于服务端处理的速度
+			}catch(InterrruptedException e) {
+			}
+			System.out.println("ClientThread Name is:" + Thread.currentThread().getName());
+		}
+		System.out.println(Thread.currentThread().getName()+ "request end");
+	}
+}
+
+public class Main {
+	public static void main(String[] args) {
+		RequestQueue requestQueue = new RequestQueue();		//请求队列
+		for(int i=0; i < 10; i++) {
+			new ServerThread(requestQueue, "ServerThread"+i).start();		//开启服务器进程
+		}
+		for(int j=0; j < 10; j++) {
+			new ClientThread(requestQueue, "ClientThread"+i).start();	//请求进程开启
+		}
+	}
+}
+```
