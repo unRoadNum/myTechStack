@@ -1,0 +1,129 @@
+角色
+1. 生产者： 用于提交用户请求，提取用户任务，并装入内存缓冲区
+2. 消费者： 在内存缓冲区中提取并处理任务
+3. 内存缓冲区： 缓存生产者提交的任务或数据，供消费者使用
+4. 任务: 生产者向内存缓冲区提交的数据结构
+5. Main: 使用生产者和消费者的客户端
+
+代码
+```
+//生产者
+public class Producer implements Runnable {
+	private volatile boolean isRunning = true;	
+	private BlockingQueue<PCData> queue;	//内存缓冲区
+	private static AtomicInteger count = new AtomicInteger();	//总数，原子操作
+	
+	private static final int SLEEPTIME = 1000;
+	
+	public Producer(BlockingQueue<PCData> queue) {
+		this.queue = queue;
+	}
+	
+	public void run() {
+		PCData data = null;
+		Random r = new Random();
+		
+		System.out.println("start producer id=" + Thread.currentThread().getId());
+		try {
+			while(isRunning) {
+				Thread.sleep(r.nextInt(SLEEPTIME));
+				data = new PCData(count.incrementAndGet());		//构造任务数据
+				System.out.println(data+" is put into queue");
+				if(!queue.offer(data, 2, TimeUnit.SECONDS)) {
+					System.err.println("failed to put data: " + data);
+				}
+			}
+		}catch(InterruptedException e) {
+			e.printStackTrace(); 	
+			Thread.currentThread().interrupt();
+		}
+	}
+	
+	public void stop() {
+		isRunning = false;
+	}
+}
+
+//消费者
+public class Consumer implements Runnable {
+	private BlockingQueue<PCData> 	queue; 			//缓冲区
+	private static final int SLEEPTIME = 1000;
+	
+	public Consumer(BlockingQueue<PCData> queue) {
+		this.queue = queue;
+	}
+	
+	public void run() {
+		System.out.println("start Consumer id=" + Thread.currentThread().getId());
+		Random r = new Random();		//随机等待时间
+		
+		try {
+			while(true) {
+				PCData data = queue.take(); 		//提取任务
+				if(null != data) {
+					int re = data.getData() * data.getData();	//求平方
+					System.out.println(MessageFormat.format("{0}*{1}={2}", data.getData(), data.getData(), re));
+					Thread.sleep(r.nextInt(SLEEPTIME));
+				}
+			}
+		}catch(InterruptedException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
+		}
+	}
+}
+
+//共享数据模型PCData
+public final class PCData {
+	private final int intData;
+	
+	public PCData(int d) {
+		intData = d;
+	}
+	
+	public PCData(String d) {
+		intData = Integer.valueOf(d);
+	}
+	
+	public int getData() {
+		return intData;
+	}
+	
+	@Override
+	public String toString() {
+		return "data:" + intData;
+	}
+}
+
+public class Main {
+	public static void main(String[] args) throws InterruptedException {
+		//建立缓冲区
+		BlockingQueue<PCData> queue = new LinkedBlockingQueue<PCData>(10);
+		Producer producer1 = new Producer(queue);
+		Producer producer2 = new Producer(queue);
+		Producer producer3 = new Producer(queue);
+		Consumer consumer1 = new Consumer(queue);
+		Consumer consumer2 = new Consumer(queue);
+		Consumer consumer3 = new Consumer(queue);
+		
+		ExecutorService service = Executors.newCachedThreadPool();
+		
+		service.execute(producer1);
+		service.execute(producer2);
+		service.execute(producer3);
+		
+		service.execute(consumer1);
+		service.execute(consumer2);
+		service.execute(consumer3);
+		
+		Thread.sleep(10*1000);
+		
+		producer1.stop();
+		producer2.stop();
+		producer3.stop();
+		
+		Thread.sleep(3000);
+		service.shutdown();
+	}
+}
+```
