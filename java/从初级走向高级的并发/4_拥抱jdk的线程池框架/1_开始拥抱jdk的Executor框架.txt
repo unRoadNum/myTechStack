@@ -1,0 +1,44 @@
+为了更好的控制多线程，jdk提供了一套Executor框架，帮助开发人员有效进行线程控制。
+
+该框架在java.util.concurrent包中，是jdk并发包中的核心类。
+其中ThreadPoolExecutor表示一个线程池。
+Executors类则扮演着线程池工厂的角色，通过Executors可以取得一个特定功能的线程池。
+
+ThreadPoolExecutor类实现了Executor接口。
+它们之间的关系如下: 
+1. ThreadPoolExecutor extends AbstractExecutorService
+2. AbstractExecutorService extends ExecutorService
+3. ExecutorService implements Executor
+
+使用举例:
+//得到一个可复用线程的线程池
+ExecutorService exe = Executors.newCachedThreadPool();
+for(int i=0; i < 1000; i++) {
+	//在线程池中执行一个任务
+	exe.execute(new MyThread("testJDKThreadPool" + Integer.toString(i)));
+}
+
+#Executors工厂类产生的各种线程池#
+
+public static ExecutorService newFixedThreadPool(int nThreads);
+该方法返回一个固定线程数量的线程池，该线程池中的线程数量始终不变。
+当有一个新的任务提交时，线程池中若有空闲线程，则立即执行。
+若没有，则新的任务会被暂存在任务队列中，待有空闲线程时，便处理任务队列中的任务。
+
+public static ExecutorService newSingleThreadExecutor();
+该方法返回只有一个线程的线程池。
+若多余一个任务被提交到该线程池，该任务会被保存在任务队列中，待线程空闲，按先进先出顺序执行队列中的任务。
+
+public static ExecutorService newCachedThreadPool();
+该方法返回一个可根据实际情况调整线程数量的线程池。
+线程池中的线程数量不确定，但若有空闲线程可复用，则会优先使用可复用的线程。
+若所有线程均在工作，又有新的任务被提交，则会创建新的线程处理任务。
+所有线程在当前任务执行完毕后，将返回线程池进行复用。
+
+public static ScheduledExecutorService newSingleThreadScheduledExecutor();
+该方法返回一个ScheduledExecutorService对象，线程池大小为1。
+ScheduledExecutorService接口在ExecutorService接口之上扩展了在给定时间执行某任务的功能。
+比如，在某一个固定的延迟之后执行，或者周期性执行任务。
+
+public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize);
+该方法返回一个ScheduledExecutorService对象，但该线程池可以指定线程数量。
