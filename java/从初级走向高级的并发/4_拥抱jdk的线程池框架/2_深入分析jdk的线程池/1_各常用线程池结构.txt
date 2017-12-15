@@ -1,0 +1,29 @@
+无论是newFixedThreadPool()、newSingleThreadExecutor()，还是newCachedThreadPool()方法，其内部实现均使用了ExecutorPoolExecutor;
+```
+public static ExecutorService newFixedThreadPool(int nThreads) {
+	return new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+};
+
+public static ExecutorService newSingleThreadExecutor() {
+	return new FinalizableDelegatedExecutorService(
+	new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+};
+
+public static ExecutorService newCachedThreadPool() {
+	return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new synchronousQueue<Runnable>());
+};
+```
+
+newFixedThreadPool()方法返回一个corePoolSize和maximumPoolSize一样大小的，并且使用了LinkedBlockingQueue任务队列的线程池。
+因为对于固定大小的线程池而言，不存在线程数量的动态变化，因此corePoolSize和maximumPoolSize要相等。
+同时，它使用无界队列存放无法立即执行的任务。
+当任务提交非常频繁的时候，该队列可能迅速膨胀，从而耗尽系统资源。
+
+newSingleThreadExecutor()返回单线程线程池，是newFixedThreadPool()方法的一种退化，只是简单的将线程池数量设置为1。
+
+newCachedThreadPool()方法返回的是corePoolSize为0，maximumPoolSize无穷大的线程池。
+这意味着没有任务时，该线程池内无线程，而当任务被提交时，该线程会使用空闲的线程执行任务。
+若无空闲线程，则将任务加入SynchronousQueue队列，而SynchronousQueue队列是一种直接提交的队列，它会迫使线程池增加新的线程执行任务。
+当任务执行完毕时，由于corePoolSize为0，因此空闲线程又会在指定时间内（60秒）被回收。
+对于newCachedThreadPool()，如果同时有大量任务被提交时，而任务的执行又不那么快时，那么系统便会开启等量的线程处理，这样的做法很快会耗尽系统的资源。
+

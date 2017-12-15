@@ -1,0 +1,25 @@
+#ThreadPoolExecutor的拒绝策略#
+
+ThreadPoolExecutor的最后一个参数指定了拒绝策略，即当任务数量超过系统实际承载能力时，该如何处理。
+
+jdk内置了4种拒绝策略：
+1. AbortPolicy策略
+该策略会直接抛出异常，阻止系统正常工作。
+2. CallerRunsPolicy策略
+只要线程池未关闭，该策略直接在调用者线程内，运行当前被丢弃的任务。
+3. DiscardOldestPolicy策略
+该策略将丢弃最老的一个请求，也就是即将被执行的一个任务，并尝试再次提交当前任务。
+4. DiscardPolicy策略
+该策略默默地丢弃无法处理的任务，不予任何处理。
+
+jdk内置的拒绝策略均实现RejectedExecutionHandler接口，若以上策略均无法满足实际应用需要，完全可以扩展RejectedExecutionHandler接口。
+RejectedExecutionHandler接口的定义如下：
+```
+public interface RejectedExecutionHandler {
+	void rejectedExecution(Runnable r, ThreadPoolExecutor executor);
+}
+```
+
+
+
+
