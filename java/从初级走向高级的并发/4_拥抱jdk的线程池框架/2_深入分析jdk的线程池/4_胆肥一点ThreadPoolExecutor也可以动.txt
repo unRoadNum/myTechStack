@@ -1,0 +1,51 @@
+#修改核心结构ThreadPoolExecutor#
+
+ThreadPoolExecutor也是一个可扩展的结构。
+它提供了beforeExecute()、afterExecute()和terminated()3个接口对线程池进行控制。
+
+为什么呢？
+我们可以看看ThreadPoolExecutor.Worker.runTask()方法：
+```
+boolean ran = false;
+beforeExecute(thread, task);		//运行前
+try {
+	task.run();		//运行任务
+	ran = true;
+	afterExecute(task, null);			//运行结束后
+	++completedTasks;
+}catch(RuntimeExeception ex) {
+	if(!ran) {
+		afterExecute(task, ex);	//运行结束后
+	}
+	throw ex;
+}
+```
+
+Worker是ThreadPoolExecutor的一个内部类;它是一个实现了Runnable接口的类。
+ThreadPoolExecutor线程池中的工作线程也正是Worker实例。
+Worker.runTask()方法会同时被多个线程访问。
+因此其beforeExecute()、afterExecute()也将同时被多线程访问。
+
+#在默认的ThreadPoolExecutor实现中，提供了空的beforeExecute()和afterExecute()实现#
+在实际应用中，可以对其进行扩展，实现对线程池状态的跟踪，输出一些有用的调试信息，以帮助系统故障诊断。
+
+例子如下：
+```
+//实现了一个带有日志输出功能的线程池，该线程池会在任务执行时输出即将要执行的任务名称和线程ID
+//同时会在任务完成后，输出线程ID和当前线程池的线程数量
+public class MyThreadPoolExecutor extends ThreadPoolExecutor {
+	public MyThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,BlockingQueue<Runnable> workQueue) {
+		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+	}
+	
+	protected void beforeExecute(Thread t, Runnable r) {
+		System.out.println("beforeExecute MyThread Name:" + ((MyThread)r).getName() + " TID:" + t.getId());
+	}
+	
+	protected void afterExecute(Thread t, Runnable r) {
+		System.out.println("afterExecute TID:" + Thread.currentThread().getId());
+		System.out.println("afterExecute PoolSize:" + this.getPoolSize());
+	}
+}
+```
+
