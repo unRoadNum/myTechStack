@@ -1,0 +1,7 @@
+在多线程环境中使用Map，一般也可以使用Collections的synchronizedMap()方法得到一个线程安全的Map。
+
+由于Map是使用相当频繁的一个数据结构，因此jdk提供了一个专门用于高并发的Map实现ConcurrentHashMap。
+就Map的高并发读写而言，ConcurrentHashMap比synchronizedMap(hashMap)快一倍。
+ConcurrentHashMap之所以有如此高的吞吐量，得益于其内部实现进行了锁分离。
+它的get操作也是无锁的，put操作的锁粒度又小于同步的HashMap，因此它的整体性能优于同步的HashMap。
+

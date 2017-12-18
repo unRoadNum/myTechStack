@@ -1,0 +1,39 @@
+1. Vector和CopyOnWriteArrayList是两个线程安全的List实现
+2. ArrayList不是线程安全的
+
+在多线程中，假如非要使用ArrayList，则需要这样使用:
+```
+Collections.synchronizedList(List list);
+```
+
+#CopyOnWriteArrayList#
+CopyOnWriteArrayList的读操作，直接返回结果，不进行加锁的同步操作。
+它的写操作的机制是这样的: 先复制该对象，获取对象的一个副本，然后对副本进行修改，最后将副本写回。
+
+这种实现方式的核心思想是减少锁竞争，从而提高在高并发时的读取性能，但是它在一定程度上牺牲了写的性能。
+
+CopyOnWriteArrayList写操作，如下是CopyOnWriteArrayList的add方法实现：
+```
+public boolean add(E e) {
+	final ReentrantLock lock = this.lock;			//用了锁
+	lock.lock();
+	try {
+		Object[] elements = getArray();
+		int len = elements.length;
+		Object[] newElements = Arrays.copyOf(elements, len+1);	//做了一次数组复制
+		
+		newElements[len] = e;		//修改副本
+		setArray[newElements];		//写回副本
+		return true;
+	} finally {
+		lock.unlock();
+	}
+}
+```
+
+#Vector#
+Vector使用了synchronized关键字，所有的get操作都必须先取得对象锁才能进行。
+在高并发的情况下，大量的锁竞争会拖累系统性能。
+
+总而言之，在高并发且以读为主的应用场景中，CopyOnWriteArrayList要优于Vector。
+但是当写操作也很频繁时, CopyOnWriteArrayList效率并不高，所以应该优先使用Vector。

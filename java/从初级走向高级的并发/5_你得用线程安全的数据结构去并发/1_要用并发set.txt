@@ -1,0 +1,11 @@
+和List相似，并发Set也有一个CopyOnWriteArraySet。
+
+#CopyOnWriteArraySet#
+它实现了Set接口，并且是线程安全的。
+它的内部实现完全依赖于CopyOnWriteArrayList。
+因此，它的特性和CopyOnWriteArrayList完全一致，适用于读多写少的高并发场合。
+
+在需要并发写的场合，可以使用Collections的方法：
+```
+public static <T> Set<T> synchronizedSet(Set<T> s);
+```
